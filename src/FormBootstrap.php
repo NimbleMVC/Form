@@ -38,9 +38,6 @@ class FormBootstrap extends Form
             case 'checkbox':
                 $attributes['class'] = str_replace('form-control', '', $attributes['class']);
                 $attributes['class'] = ($attributes['class'] ?? '') . ' form-check-input';
-
-//                return '<input type="checkbox" class="form-check-input" id="exampleCheck1">
-//                    <label class="form-check-label" for="exampleCheck1">Check me out</label>';
                 break;
             case 'textarea':
                 $tag = 'textarea';
