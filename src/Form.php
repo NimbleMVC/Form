@@ -2,6 +2,7 @@
 
 namespace Nimblephp\form;
 
+use Krzysztofzylka\Arrays\Arrays;
 use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\framework\Request;
 
@@ -42,6 +43,12 @@ class Form
     protected Request $request;
 
     /**
+     * Form input data
+     * @var array
+     */
+    protected array $data = [];
+
+    /**
      * Initialize form
      * @param string|null $action
      * @param MethodEnum $method
@@ -63,6 +70,16 @@ class Form
      */
     public function addField(string $type, ?string $name, ?string $title, array $attributes = [], array $options = []): self
     {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $attributes['value'] = $data;
+
+            if ($type === 'checkbox') {
+                $attributes['checked'] = 'checked';
+            }
+        }
+
         $this->fields[] = [
             'type' => $type,
             'name' => $name,
@@ -125,6 +142,12 @@ class Form
         array $attributes = []
     ): self
     {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $selectedKey = $data;
+        }
+
         return $this->addField(
             type: 'select',
             name: $name,
@@ -145,6 +168,12 @@ class Form
      */
     public function addInputHidden(string $name, string $value): self
     {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $value = $data;
+        }
+
         return $this->addField(
             type: 'hidden',
             name: $name,
@@ -221,27 +250,38 @@ class Form
      */
     public function onSubmit(): bool
     {
-        $formId = [];
+        $data = [];
 
         if ($this->method === MethodEnum::POST) {
             if (!isset($_POST)) {
                 return false;
             }
 
-            $formId = $_POST['formId'] ?? null;
+            $data = $_POST;
         } elseif ($this->method === MethodEnum::GET) {
             if (!isset($_GET)) {
                 return false;
             }
 
-            $formId = $_GET['formId'] ?? null;
+            $data = $_GET;
         }
 
-        if ($this->getId() !== htmlspecialchars($formId)) {
+        if ($this->getId() !== htmlspecialchars($data['formId'])) {
             return false;
         }
 
+        $this->setData($data);
+
         return true;
+    }
+
+    /**
+     * Get data (htmlspecialchars))
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     /**
@@ -353,6 +393,40 @@ class Form
         }
 
         return $return;
+    }
+
+    /**
+     * Set data
+     * @param array $data
+     * @return void
+     */
+    protected function setData(array $data): void
+    {
+        $this->data = Arrays::htmlSpecialChars($data);
+    }
+
+    /**
+     * Get data by key
+     * @param string|null $name
+     * @return ?string
+     */
+    protected function getDataByKey(?string $name): ?string
+    {
+        if (empty($name)) {
+            return null;
+        }
+
+        $data = $this->getData();
+
+        if (empty($data)) {
+            if ($this->method === MethodEnum::POST) {
+                $data = Arrays::htmlSpecialChars($_POST);
+            } elseif ($this->method === MethodEnum::GET) {
+                $data = Arrays::htmlSpecialChars($_GET);
+            }
+        }
+
+        return @eval('return $data["' . str_replace('/', '"]["', $name) . '"];');
     }
 
 }
