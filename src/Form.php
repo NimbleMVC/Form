@@ -49,6 +49,12 @@ class Form
     protected array $data = [];
 
     /**
+     * Add linebreak
+     * @var bool
+     */
+    protected bool $addLinebreak = true;
+
+    /**
      * Initialize form
      * @param string|null $action
      * @param MethodEnum $method
@@ -201,7 +207,7 @@ class Form
         $formContent = '';
 
         foreach ($this->fields as $field) {
-            $formContent .= $this->renderField($field) . '<br />';
+            $formContent .= $this->renderField($field) . ($this->addLinebreak ? '<br />' : '');
         }
 
         return '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
@@ -313,7 +319,7 @@ class Form
                 break;
             case 'select':
                 if ($field['title']) {
-                    $html .= '<label for="' . $attributes['id'] . '">' . $field['title'] . '</label><br />';
+                    $html .= '<label for="' . $attributes['id'] . '">' . $field['title'] . '</label>' . ($this->addLinebreak ? '<br />' : '');
                 }
 
                 $tag = 'select';
@@ -326,7 +332,7 @@ class Form
         }
 
         if ($field['title']) {
-            $html .= '<label for="' . $attributes['id'] . '">' . $field['title'] . '</label><br />';
+            $html .= '<label for="' . $attributes['id'] . '">' . $field['title'] . '</label>' . ($this->addLinebreak ? '<br />' : '');
         }
 
         return $html . '<' . $tag . $this->generateAttributes($attributes) . '>' . $tagContent . '</' . $tag . '>';
