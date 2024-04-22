@@ -3,6 +3,7 @@
 namespace Nimblephp\form;
 
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\framework\Request;
 
 /**
  * Form generator
@@ -29,6 +30,18 @@ class Form
     protected ?string $action = null;
 
     /**
+     * Form id
+     * @var string|null
+     */
+    protected ?string $id = null;
+
+    /**
+     * Request instance
+     * @var Request
+     */
+    protected Request $request;
+
+    /**
      * Initialize form
      * @param string|null $action
      * @param MethodEnum $method
@@ -37,6 +50,7 @@ class Form
     {
         $this->action = $action;
         $this->method = $method;
+        $this->request = new Request();
     }
 
     /**
@@ -47,7 +61,7 @@ class Form
      * @param array $attributes
      * @return $this
      */
-    public function addField(string $type, string $name, ?string $title, array $attributes = [], array $options = []): self
+    public function addField(string $type, ?string $name, ?string $title, array $attributes = [], array $options = []): self
     {
         $this->fields[] = [
             'type' => $type,
@@ -124,11 +138,33 @@ class Form
     }
 
     /**
+     * Add input hidden
+     * @param string $name
+     * @param string $value
+     * @return self
+     */
+    public function addInputHidden(string $name, string $value): self
+    {
+        return $this->addField(
+            type: 'hidden',
+            name: $name,
+            title: null,
+            attributes: [
+                'value' => $value
+            ]
+        );
+    }
+
+    /**
      * Render html form
      * @return string
      */
     public function render(): string
     {
+        if ($this->id) {
+            $this->addInputHidden('formId', $this->getId());
+        }
+
         $formAttributes = [
             'action' => $this->action,
             'method' => $this->method->value,
@@ -143,6 +179,72 @@ class Form
     }
 
     /**
+     * Add submit button
+     * @param string $value
+     * @param ?array $attributes
+     * @return self
+     */
+    public function addSubmitButton(string $value, ?array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'submit',
+            name: null,
+            title: null,
+            attributes: [
+                'value' => $value
+            ] + $attributes,
+        );
+    }
+
+    /**
+     * Get form id
+     * @return string|null
+     */
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set form id
+     * @param string|null $id
+     * @return void
+     */
+    public function setId(?string $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * On submit form
+     * @return bool
+     */
+    public function onSubmit(): bool
+    {
+        $formId = [];
+
+        if ($this->method === MethodEnum::POST) {
+            if (!isset($_POST)) {
+                return false;
+            }
+
+            $formId = $_POST['formId'] ?? null;
+        } elseif ($this->method === MethodEnum::GET) {
+            if (!isset($_GET)) {
+                return false;
+            }
+
+            $formId = $_GET['formId'] ?? null;
+        }
+
+        if ($this->getId() !== htmlspecialchars($formId)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Render field
      * @param array $field
      * @return string
@@ -153,8 +255,8 @@ class Form
         $tagContent = '';
         $tag = 'input';
         $attributes = [
-            'name' => $this->generateName($field['name']),
-            'id' => $this->generateId($field['name']),
+            'name' => $this->generateName($field['name'] ?? ''),
+            'id' => $this->generateId($field['name'] ?? ''),
             'type' => $field['type']
         ] + $field['attributes'];
 
