@@ -272,6 +272,10 @@ class Form
             $data = $_GET;
         }
 
+        if (!isset($data['formId'])) {
+            return false;
+        }
+
         if ($this->getId() !== htmlspecialchars($data['formId'])) {
             return false;
         }
