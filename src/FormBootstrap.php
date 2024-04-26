@@ -31,6 +31,10 @@ class FormBootstrap extends Form
                 'class' => 'form-control'
             ] + $field['attributes'];
 
+        if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
+            $attributes['class'] .= ' border-danger';
+        }
+
         switch ($field['type']) {
             case 'submit':
                 $attributes['class'] = ($attributes['class'] ?? '') . ' btn btn-primary';
@@ -69,6 +73,10 @@ class FormBootstrap extends Form
 
         if ($field['type'] === 'checkbox') {
             $html .= '<label for="' . $attributes['id'] . '" class="form-check-label ms-2">' . $field['title'] . '</label><br />';
+        }
+
+        if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
+            $html .= '<div class="validation text-danger">' . $this->validationErrors[$field['name']] . '</div>';
         }
 
         return $html . '</div>';

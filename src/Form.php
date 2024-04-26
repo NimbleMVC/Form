@@ -4,6 +4,7 @@ namespace Nimblephp\form;
 
 use Krzysztofzylka\Arrays\Arrays;
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\framework\Request;
 
 /**
@@ -55,23 +56,65 @@ class Form
     protected bool $addLinebreak = true;
 
     /**
+     * Validation errors
+     * @var array
+     */
+    protected array $validationErrors = [];
+
+    /**
      * Initialize form
      * @param string|null $action
      * @param MethodEnum $method
      */
     public function __construct(?string $action = null, MethodEnum $method = MethodEnum::POST)
     {
+        if (is_null($action)) {
+            $action = $_SERVER['REQUEST_URI'];
+        }
+
         $this->action = $action;
         $this->method = $method;
         $this->request = new Request();
     }
 
+    public function validation(array $validations = []): bool
+    {
+        if ($this->method === MethodEnum::POST) {
+            if (!isset($_POST)) {
+                return false;
+            }
+
+            $data = $_POST;
+        } elseif ($this->method === MethodEnum::GET) {
+            if (!isset($_GET)) {
+                return false;
+            }
+
+            $data = $_GET;
+        }
+
+        $this->setData($data);
+
+        foreach ($validations as $fieldKey => $validationList) {
+            foreach ($validationList as $validation) {
+                try {
+                    $validation($this->getDataByKey($fieldKey));
+                } catch (ValidationException $exception) {
+                    $this->validationErrors[$fieldKey] = $exception->getMessage();
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Add field
      * @param string $type
-     * @param string $name
+     * @param string|null $name
      * @param ?string $title
      * @param array $attributes
+     * @param array $options
      * @return $this
      */
     public function addField(string $type, ?string $name, ?string $title, array $attributes = [], array $options = []): self
@@ -256,6 +299,10 @@ class Form
      */
     public function onSubmit(): bool
     {
+        if (!empty($this->validationErrors)) {
+            return false;
+        }
+
         $data = [];
 
         if ($this->method === MethodEnum::POST) {
@@ -272,7 +319,13 @@ class Form
             $data = $_GET;
         }
 
-        if ($this->getId() !== htmlspecialchars($data['formId'])) {
+        if (empty($data)) {
+            return false;
+        }
+
+        if ((!is_null($this->id) && isset($data['formId']) && $this->getId() !== htmlspecialchars($data['formId']))
+            || (!is_null($this->id) && !isset($data['formId']))
+        ) {
             return false;
         }
 
@@ -301,10 +354,10 @@ class Form
         $tagContent = '';
         $tag = 'input';
         $attributes = [
-            'name' => $this->generateName($field['name'] ?? ''),
-            'id' => $this->generateId($field['name'] ?? ''),
-            'type' => $field['type']
-        ] + $field['attributes'];
+                'name' => $this->generateName($field['name'] ?? ''),
+                'id' => $this->generateId($field['name'] ?? ''),
+                'type' => $field['type']
+            ] + $field['attributes'];
 
         switch ($field['type']) {
             case 'checkbox':
