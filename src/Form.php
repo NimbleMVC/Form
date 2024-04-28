@@ -77,33 +77,19 @@ class Form
         $this->request = new Request();
     }
 
+    /**
+     * Validate form
+     * @param array $validations
+     * @return bool
+     */
     public function validation(array $validations = []): bool
     {
-        if ($this->method === MethodEnum::POST) {
-            if (!isset($_POST)) {
-                return false;
-            }
-
-            $data = $_POST;
-        } elseif ($this->method === MethodEnum::GET) {
-            if (!isset($_GET)) {
-                return false;
-            }
-
-            $data = $_GET;
+        if (!$this->prepareData()) {
+            return false;
         }
 
-        $this->setData($data);
-
-        foreach ($validations as $fieldKey => $validationList) {
-            foreach ($validationList as $validation) {
-                try {
-                    $validation($this->getDataByKey($fieldKey));
-                } catch (ValidationException $exception) {
-                    $this->validationErrors[$fieldKey] = $exception->getMessage();
-                }
-            }
-        }
+        $validation = new Validation($this->fields, $this->getData());
+        $this->validationErrors = $validation->run();
 
         return true;
     }
@@ -303,33 +289,19 @@ class Form
             return false;
         }
 
-        $data = [];
-
-        if ($this->method === MethodEnum::POST) {
-            if (!isset($_POST)) {
-                return false;
-            }
-
-            $data = $_POST;
-        } elseif ($this->method === MethodEnum::GET) {
-            if (!isset($_GET)) {
-                return false;
-            }
-
-            $data = $_GET;
-        }
-
-        if (empty($data)) {
+        if (!$this->prepareData()) {
             return false;
         }
 
-        if ((!is_null($this->id) && isset($data['formId']) && $this->getId() !== htmlspecialchars($data['formId']))
-            || (!is_null($this->id) && !isset($data['formId']))
+        if (empty($this->data)) {
+            return false;
+        }
+
+        if ((!is_null($this->id) && isset($this->data['formId']) && $this->getId() !== htmlspecialchars($this->data['formId']))
+            || (!is_null($this->id) && !isset($this->data['formId']))
         ) {
             return false;
         }
-
-        $this->setData($data);
 
         return true;
     }
@@ -486,6 +458,29 @@ class Form
         }
 
         return @eval('return $data["' . str_replace('/', '"]["', $name) . '"];');
+    }
+
+    /**
+     * Prepare data
+     * @return bool
+     */
+    protected function prepareData(): bool
+    {
+        if ($this->method === MethodEnum::GET) {
+            if (!isset($_GET)) {
+                return false;
+            }
+
+            $this->setData($_GET);
+        } elseif ($this->method === MethodEnum::POST) {
+            if (!isset($_POST)) {
+                return false;
+            }
+
+            $this->setData($_POST);
+        }
+
+        return true;
     }
 
 }
