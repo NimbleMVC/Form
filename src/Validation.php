@@ -2,15 +2,24 @@
 
 namespace Nimblephp\form;
 
-use Krzysztofzylka\Arrays\Arrays;
-use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\form\Exceptions\ValidationException;
+use Nimblephp\framework\Exception\NimbleException;
 
 /**
  * Form validation
  */
 class Validation
 {
+
+    /**
+     * Error language
+     * @var array
+     */
+    public static $language = [
+        'required' => 'This field cannot be empty.',
+        'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
+        'length_max' => 'The field cannot have more than {length} [character,characters,characters].'
+    ];
 
     /**
      * Fields
@@ -28,7 +37,7 @@ class Validation
      * Validation errors
      * @var array
      */
-    protected array $validationErrors;
+    protected array $validationErrors = [];
 
     /**
      * Construct
@@ -41,6 +50,24 @@ class Validation
         $this->data = $data;
     }
 
+    public static function changeLanguage(string $lang) {
+        if (!in_array($lang, ['PL'])) {
+            throw new NimbleException('Language not supported.');
+        }
+
+        switch ($lang) {
+            case 'PL':
+                self::$language = array_merge(
+                    self::$language,
+                    [
+                        'required' => 'Pole nie może być puste.',
+                        'length_min' => 'Pole nie może mieć mniej niż {length} [znak,znaki,znaków].',
+                        'length_max' => 'Pole nie może mieć więcej niż {length} [znak,znaki,znaków].'
+                    ]
+                );
+        }
+    }
+
     /**
      * Run validation
      * @return array
@@ -48,16 +75,51 @@ class Validation
     public function run(): array
     {
         foreach ($this->fields as $fieldKey => $validationList) {
-            foreach ($validationList as $validation) {
+            foreach ($validationList as $validationType => $validation) {
                 try {
-                    $validation($this->getDataByKey($fieldKey));
+                    if (is_callable($validation)) {
+                        $validation($this->getDataByKey($fieldKey));
+                    } elseif (is_string($validationType)) {
+                        $this->predefinedValidation($validationType, $validation, $this->getDataByKey($fieldKey));
+                    } elseif (is_int($validationType)) {
+                        $this->predefinedValidation($validation, null, $this->getDataByKey($fieldKey));
+                    }
                 } catch (ValidationException $exception) {
                     $this->validationErrors[$fieldKey] = $exception->getMessage();
+
+                    continue 2;
                 }
             }
         }
 
         return $this->validationErrors;
+    }
+
+    protected function predefinedValidation(string $name, mixed $customData, mixed $data) {
+        switch ($name) {
+            case 'required':
+                if (!$data || empty($data)) {
+                    throw new ValidationException(self::$language['required']);
+                }
+
+            case 'length':
+                if (is_array($customData) && (array_key_exists('min', $customData) || array_key_exists('max', $customData))) {
+                    $min = $customData['min'] ?? null;
+                    $max = $customData['max'] ?? null;
+
+                    if ($min && strlen($data) < $min) {
+                        $validation = str_replace('{length}', $min, self::$language['length_min']);
+
+                        throw new ValidationException($this->replaceInflections($validation));
+                    }
+
+                    if ($max && strlen($data) > $max) {
+                        $validation = str_replace('{length}', $max, self::$language['length_max']);
+
+                        throw new ValidationException($this->replaceInflections($validation));
+                    }
+                }
+        }
     }
 
     /**
@@ -74,6 +136,41 @@ class Validation
         $data = $this->data;
 
         return @eval('return $data["' . str_replace('/', '"]["', $name) . '"];');
+    }
+
+    /**
+     * Inflected word
+     * @param $number
+     * @param $wordForms
+     * @return string
+     */
+    protected function inflectWord($number, $wordForms): string
+    {
+        $lastDigit = $number % 10;
+        $lastTwoDigits = $number % 100;
+
+        if ($lastDigit == 1 && $lastTwoDigits != 11) {
+            return $number . " " . $wordForms[0];
+        } elseif (in_array($lastDigit, [2, 3, 4]) && !in_array($lastTwoDigits, [12, 13, 14])) {
+            return $number . " " . $wordForms[1];
+        } else {
+            return $number . " " . $wordForms[2];
+        }
+    }
+
+    /**
+     * Replace inflected words
+     * @param $text
+     * @return string
+     */
+    protected function replaceInflections($text): string
+    {
+        return preg_replace_callback('/(\d+)\s*\[([^\]]+)\]/', function($matches) {
+            $number = $matches[1];
+            $words = explode(',', $matches[2]);
+
+            return $this->inflectWord($number, $words);
+        }, $text);
     }
 
 }

@@ -46,16 +46,12 @@ class FormBootstrap extends Form
             case 'textarea':
                 $tag = 'textarea';
 
-                if ($field['attributes']['value']) {
+                if (isset($field['attributes']['value']) && $field['attributes']['value']) {
                     $tagContent = $field['attributes']['value'];
                     unset($field['attributes']['value']);
                 }
                 break;
             case 'select':
-                if ($field['title']) {
-                    $html .= '<label for="' . $attributes['id'] . '" class="form-label">' . $field['title'] . '</label><br />';
-                }
-
                 $tag = 'select';
 
                 foreach ($field['options']['options'] as $key => $name) {

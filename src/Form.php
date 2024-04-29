@@ -88,7 +88,7 @@ class Form
             return false;
         }
 
-        $validation = new Validation($this->fields, $this->getData());
+        $validation = new Validation($validations, $this->getData());
         $this->validationErrors = $validation->run();
 
         return true;
@@ -140,6 +140,23 @@ class Form
             name: $name,
             title: $title,
             attributes: $attributes
+        );
+    }
+
+    /**
+     * Add input
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return $this
+     */
+    public function addFloatInput(string $name, ?string $title = null, array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'number',
+            name: $name,
+            title: $title,
+            attributes: array_merge(['step' => '0.01'], $attributes)
         );
     }
 
