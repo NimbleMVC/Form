@@ -13,9 +13,6 @@ composer require nimblephp/form
 ## Użycie
 TODO
 
-## Konfiguracja
-- **TWIG_CACHE** (false) - czy twig ma tworzyć cache
-
 ## Współtworzenie
 Zachęcamy do współtworzenia! Masz sugestie, znalazłeś błędy, chcesz pomóc w rozwoju? Otwórz issue lub prześlij pull request.
 
