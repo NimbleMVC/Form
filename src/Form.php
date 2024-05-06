@@ -4,7 +4,6 @@ namespace Nimblephp\form;
 
 use Krzysztofzylka\Arrays\Arrays;
 use Nimblephp\form\Enum\MethodEnum;
-use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\framework\Request;
 
 /**
@@ -167,7 +166,7 @@ class Form
      * @param array $attributes
      * @return $this
      */
-    public function addTextarea(string $name, ?string $title=null, array $attributes = []): self
+    public function addTextarea(string $name, ?string $title = null, array $attributes = []): self
     {
         return $this->addField(
             type: 'textarea',

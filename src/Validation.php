@@ -15,7 +15,7 @@ class Validation
      * Error language
      * @var array
      */
-    public static $language = [
+    public static array $language = [
         'required' => 'This field cannot be empty.',
         'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
         'length_max' => 'The field cannot have more than {length} [character,characters,characters].'
@@ -50,7 +50,14 @@ class Validation
         $this->data = $data;
     }
 
-    public static function changeLanguage(string $lang) {
+    /**
+     * Change language
+     * @param string $lang
+     * @return void
+     * @throws NimbleException
+     */
+    public static function changeLanguage(string $lang): void
+    {
         if (!in_array($lang, ['PL'])) {
             throw new NimbleException('Language not supported.');
         }
@@ -95,13 +102,23 @@ class Validation
         return $this->validationErrors;
     }
 
-    protected function predefinedValidation(string $name, mixed $customData, mixed $data) {
+    /**
+     * Predefined validations
+     * @param string $name
+     * @param mixed $customData
+     * @param mixed $data
+     * @return void
+     * @throws ValidationException
+     */
+    protected function predefinedValidation(string $name, mixed $customData, mixed $data): void
+    {
         switch ($name) {
             case 'required':
                 if (!$data || empty($data)) {
                     throw new ValidationException(self::$language['required']);
                 }
 
+                break;
             case 'length':
                 if (is_array($customData) && (array_key_exists('min', $customData) || array_key_exists('max', $customData))) {
                     $min = $customData['min'] ?? null;
@@ -119,6 +136,8 @@ class Validation
                         throw new ValidationException($this->replaceInflections($validation));
                     }
                 }
+
+                break;
         }
     }
 
@@ -165,7 +184,7 @@ class Validation
      */
     protected function replaceInflections($text): string
     {
-        return preg_replace_callback('/(\d+)\s*\[([^\]]+)\]/', function($matches) {
+        return preg_replace_callback('/(\d+)\s*\[([^\]]+)\]/', function ($matches) {
             $number = $matches[1];
             $words = explode(',', $matches[2]);
 
