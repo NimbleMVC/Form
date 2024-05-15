@@ -2,6 +2,8 @@
 
 namespace Nimblephp\form;
 
+use Nimblephp\debugbar\Debugbar;
+
 /**
  * Form generator (bootstrap)
  */
@@ -24,12 +26,13 @@ class FormBootstrap extends Form
         $html = '<div class="mb-3">';
         $tagContent = '';
         $tag = 'input';
-        $attributes = [
+        $attributes = $field['attributes']
+            + [
                 'name' => $this->generateName($field['name'] ?? ''),
                 'id' => $this->generateId($field['name'] ?? ''),
                 'type' => $field['type'],
                 'class' => 'form-control'
-            ] + $field['attributes'];
+            ];
 
         if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
             $attributes['class'] .= ' border-danger';
