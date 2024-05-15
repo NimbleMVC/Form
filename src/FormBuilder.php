@@ -43,7 +43,8 @@ class FormBuilder
     /**
      * Render form
      * @param string $name
-     * @return void
+     * @param ControllerInterface|null $controller
+     * @return string
      */
     public static function render(string $name, ?ControllerInterface $controller = null): string
     {
@@ -54,7 +55,7 @@ class FormBuilder
         }
 
         /** @var FormBuilder $formBuilder */
-        $formBuilder = new $class();
+        $formBuilder = new $class($controller);
         $formBuilder->init();
         $formBuilder->create();
         $formBuilder->form->validation($formBuilder->validation());
