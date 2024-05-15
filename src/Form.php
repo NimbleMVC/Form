@@ -341,11 +341,12 @@ class Form
         $html = '';
         $tagContent = '';
         $tag = 'input';
-        $attributes = [
+        $attributes = $field['attributes']
+            + [
                 'name' => $this->generateName($field['name'] ?? ''),
                 'id' => $this->generateId($field['name'] ?? ''),
                 'type' => $field['type']
-            ] + $field['attributes'];
+            ];
 
         switch ($field['type']) {
             case 'checkbox':
