@@ -3,11 +3,11 @@
 namespace Nimblephp\form;
 
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\form\Interfaces\FormBuilderInterface;
 use Nimblephp\framework\Exception\NotFoundException;
 use Nimblephp\framework\Interfaces\ControllerInterface;
-use Nimblephp\framework\Kernel;
 
-class FormBuilder
+abstract class FormBuilder implements FormBuilderInterface
 {
 
     /**
@@ -36,7 +36,7 @@ class FormBuilder
 
     /**
      * Controller instance
-     * @var ControllerInterface
+     * @var ?ControllerInterface
      */
     protected ?ControllerInterface $controller = null;
 
@@ -45,6 +45,7 @@ class FormBuilder
      * @param string $name
      * @param ControllerInterface|null $controller
      * @return string
+     * @throws NotFoundException
      */
     public static function render(string $name, ?ControllerInterface $controller = null): string
     {
@@ -79,39 +80,6 @@ class FormBuilder
         } else {
             $this->form = new Form($this->action, $this->method);
         }
-    }
-
-    /**
-     * Initialize
-     * @return void
-     */
-    public function init(): void
-    {
-    }
-
-    /**
-     * Create form
-     * @return void
-     */
-    public function create(): void
-    {
-    }
-
-    /**
-     * Create validation
-     * @return array
-     */
-    public function validation(): array
-    {
-        return [];
-    }
-
-    /**
-     * On submit action
-     * @return void
-     */
-    public function onSubmit(): void
-    {
     }
 
 }
