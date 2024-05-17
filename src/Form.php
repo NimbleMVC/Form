@@ -332,6 +332,16 @@ class Form
     }
 
     /**
+     * Set data
+     * @param array $data
+     * @return void
+     */
+    public function setData(array $data): void
+    {
+        $this->data = Arrays::htmlSpecialChars($data);
+    }
+
+    /**
      * Render field
      * @param array $field
      * @return string
@@ -441,16 +451,6 @@ class Form
         }
 
         return $return;
-    }
-
-    /**
-     * Set data
-     * @param array $data
-     * @return void
-     */
-    protected function setData(array $data): void
-    {
-        $this->data = Arrays::htmlSpecialChars($data);
     }
 
     /**
