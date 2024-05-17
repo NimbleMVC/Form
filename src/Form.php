@@ -342,6 +342,17 @@ class Form
     }
 
     /**
+     * Add validation
+     * @param string $fieldName
+     * @param string $validationText
+     * @return void
+     */
+    public function addValidation(string $fieldName, string $validationText): void
+    {
+        $this->validationErrors[$fieldName] = $validationText;
+    }
+
+    /**
      * Render field
      * @param array $field
      * @return string
