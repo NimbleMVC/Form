@@ -485,7 +485,7 @@ class Form
             }
         }
 
-        return @eval('return $data["' . str_replace('/', '"]["', $name) . '"];');
+        return Arrays::getNestedValue($data, explode('/', $name));
     }
 
     /**
