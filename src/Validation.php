@@ -2,6 +2,7 @@
 
 namespace Nimblephp\form;
 
+use Krzysztofzylka\Arrays\Arrays;
 use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\framework\Exception\NimbleException;
 
@@ -152,9 +153,7 @@ class Validation
             return null;
         }
 
-        $data = $this->data;
-
-        return @eval('return $data["' . str_replace('/', '"]["', $name) . '"];');
+        return Arrays::getNestedValue($this->data, explode('/', $name));
     }
 
     /**
