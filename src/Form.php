@@ -180,7 +180,7 @@ class Form
      * Create select
      * @param string $name
      * @param array $options
-     * @param string|null $selectedKey
+     * @param null|string|array $selectedKey
      * @param string|null $title
      * @param array $attributes
      * @return $this
@@ -188,7 +188,7 @@ class Form
     public function addSelect(
         string $name,
         array $options,
-        ?string $selectedKey = null,
+        null|string|array $selectedKey = null,
         ?string $title = null,
         array $attributes = []
     ): self
@@ -323,7 +323,7 @@ class Form
     }
 
     /**
-     * Get data (htmlspecialchars))
+     * Get data (htmlspecialchars)
      * @return array
      */
     public function getData(): array
@@ -388,7 +388,12 @@ class Form
                 $tag = 'select';
 
                 foreach ($field['options']['options'] as $key => $name) {
-                    $selected = (string)$field['options']['selectedKey'] === (string)$key;
+                    if (!is_null($field['options']['selectedKey'])) {
+                        $selected = (string)$field['options']['selectedKey'] === (string)$key;
+                    } else {
+                        $selected = false;
+                    }
+
                     $tagContent .= '<option value="' . $key . '"' . ($selected ? 'selected' : '') . '>' . $name . '</option>';
                 }
                 break;
@@ -467,9 +472,9 @@ class Form
     /**
      * Get data by key
      * @param string|null $name
-     * @return ?string
+     * @return mixed
      */
-    protected function getDataByKey(?string $name): ?string
+    protected function getDataByKey(?string $name): mixed
     {
         if (empty($name)) {
             return null;
@@ -485,7 +490,15 @@ class Form
             }
         }
 
-        return Arrays::getNestedValue($data, explode('/', $name));
+        $explodeName = explode('/', $name);
+
+        foreach ($explodeName as $key => $value) {
+            if (empty(trim($value))) {
+                unset($explodeName[$key]);
+            }
+        }
+
+        return Arrays::getNestedValue($data, $explodeName);
     }
 
     /**
