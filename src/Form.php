@@ -411,7 +411,7 @@ class Form
         $attributesHtml = '';
 
         foreach ($attributes as $key => $value) {
-            if (is_null($value)) {
+            if (is_null($value) || is_array($value)) {
                 continue;
             }
 
