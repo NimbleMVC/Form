@@ -58,8 +58,19 @@ class FormBootstrap extends Form
                 $tag = 'select';
 
                 foreach ($field['options']['options'] as $key => $name) {
-                    $selected = (string)$field['options']['selectedKey'] === (string)$key;
-                    $tagContent .= '<option value="' . $key . '"' . ($selected ? 'selected' : '') . '>' . $name . '</option>';
+                    if (!is_null($field['options']['selectedKey'])) {
+                        if (is_array($field['options']['selectedKey'])) {
+                            $selected = in_array((string)$key, $field['options']['selectedKey']);
+                        } else {
+                            $selected = (string)$field['options']['selectedKey'] === (string)$key;
+                        }
+                    } else {
+                        $selected = false;
+                    }
+
+                    $value = $key ? 'value="' . $key . '" ' : '';
+
+                    $tagContent .= '<option ' . $value . ($selected ? 'selected' : '') . '>' . $name . '</option>';
                 }
                 break;
         }
