@@ -116,7 +116,7 @@ class FormBootstrap extends Form
 
                 if (isset($field['attributes']['value']) && $field['attributes']['value']) {
                     $tagContent = $field['attributes']['value'];
-                    unset($field['attributes']['value']);
+                    unset($attributes['value']);
                 }
                 break;
             case 'select':
