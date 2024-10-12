@@ -61,6 +61,12 @@ class Form
     protected array $validationErrors = [];
 
     /**
+     * Add form node
+     * @var bool
+     */
+    protected bool $addFormNode = true;
+
+    /**
      * Initialize form
      * @param string|null $action
      * @param MethodEnum $method
@@ -255,7 +261,11 @@ class Form
             $formContent .= $this->renderField($field) . ($this->addLinebreak ? '<br />' : '');
         }
 
-        return '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
+        if ($this->addFormNode) {
+            return '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
+        } else {
+            return $formContent;
+        }
     }
 
     /**
@@ -293,6 +303,18 @@ class Form
     public function setId(?string $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * Set add form node
+     * @param bool $addFormNode
+     * @return $this
+     */
+    public function setAddFormNode(bool $addFormNode): self
+    {
+        $this->addFormNode = $addFormNode;
+
+        return $this;
     }
 
     /**
