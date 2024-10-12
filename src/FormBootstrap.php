@@ -17,13 +17,78 @@ class FormBootstrap extends Form
     protected bool $addLinebreak = false;
 
     /**
+     * Group active
+     * @var bool
+     */
+    protected bool $group = false;
+
+    /**
+     * Col
+     * @var int|null
+     */
+    protected ?int $col = null;
+
+    /**
+     * Start group
+     * @param int $col
+     * @return self
+     */
+    public function startGroup(int $col = 6): self
+    {
+        $this->fields[] = [
+            'type' => 'group-start',
+            'col' => $col
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Stop group
+     * @return self
+     */
+    public function stopGroup(): self
+    {
+        $this->fields[] = [
+            'type' => 'group-stop'
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Add title
+     * @param string $title
+     * @return self
+     */
+    public function title(string $title): self
+    {
+        $this->fields[] = [
+            'type' => 'title',
+            'title' => $title
+        ];
+
+        return $this;
+    }
+
+    /**
      * Render field
      * @param array $field
      * @return string
      */
     protected function renderField(array $field): string
     {
-        $html = '<div class="mb-3">';
+        if ($field['type'] === 'group-start') {
+            $this->col = $field['col'];
+            return '<div class="row">';
+        } elseif ($field['type'] === 'group-stop') {
+            $this->col = null;
+            return '</div>';
+        } elseif ($field['type'] === 'title') {
+            return '<legend>' . $field['title'] . '</legend>';
+        }
+
+        $html = '<div class="mb-3 ' . ($this->col > 0 ? ('col-' . $this->col) : '') . '">';
         $tagContent = '';
         $tag = 'input';
         $attributes = $field['attributes']
