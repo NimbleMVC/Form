@@ -93,6 +93,12 @@ class Form
             return false;
         }
 
+        if ((!is_null($this->id) && isset($this->data['formId']) && $this->getId() !== htmlspecialchars($this->data['formId']))
+            || (!is_null($this->id) && !isset($this->data['formId']))
+        ) {
+            return false;
+        }
+
         $validation = new Validation($validations, $this->getData());
         $this->validationErrors = $validation->run();
 
