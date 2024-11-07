@@ -19,7 +19,9 @@ class Validation
     public static array $language = [
         'required' => 'This field cannot be empty.',
         'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
-        'length_max' => 'The field cannot have more than {length} [character,characters,characters].'
+        'length_max' => 'The field cannot have more than {length} [character,characters,characters].',
+        'is_email' => 'The provided email address is invalid.',
+        'is_integer' => 'The provided value must be an integer.'
     ];
 
     /**
@@ -70,7 +72,9 @@ class Validation
                     [
                         'required' => 'Pole nie może być puste.',
                         'length_min' => 'Pole nie może mieć mniej niż {length} [znak,znaki,znaków].',
-                        'length_max' => 'Pole nie może mieć więcej niż {length} [znak,znaki,znaków].'
+                        'length_max' => 'Pole nie może mieć więcej niż {length} [znak,znaki,znaków].',
+                        'isEmail' => 'Podany adres e-mail jest niepoprawny.',
+                        'isInteger' => 'Podana wartość musi być liczbą całkowitą.'
                     ]
                 );
         }
@@ -115,7 +119,7 @@ class Validation
     {
         switch ($name) {
             case 'required':
-                if (!$data || empty($data)) {
+                if (!$data || empty($data) || empty(trim($data))) {
                     throw new ValidationException(self::$language['required']);
                 }
 
@@ -136,6 +140,18 @@ class Validation
 
                         throw new ValidationException($this->replaceInflections($validation));
                     }
+                }
+
+                break;
+            case 'isEmail':
+                if (!filter_var($data, FILTER_VALIDATE_EMAIL)) {
+                    throw new ValidationException(self::$language['isEmail']);
+                }
+
+                break;
+            case 'isInteger':
+                if (!filter_var($data, FILTER_VALIDATE_INT)) {
+                    throw new ValidationException(self::$language['isInteger']);
                 }
 
                 break;
