@@ -74,7 +74,7 @@ class Form
     public function __construct(?string $action = null, MethodEnum $method = MethodEnum::POST)
     {
         if (is_null($action)) {
-            $action = $_SERVER['REQUEST_URI'];
+            $action = $_SERVER['REQUEST_URI'] ?? '';
         }
 
         $this->action = $action;
