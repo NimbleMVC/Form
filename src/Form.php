@@ -114,7 +114,7 @@ class Form
      * @param array $options
      * @return $this
      */
-    public function addField(string $type, ?string $name, ?string $title, array $attributes = [], array $options = []): self
+    public function addField(string $type, ?string $name, ?string $title, array $attributes = [], array $options = [], ?string $class = null): self
     {
         $data = $this->getDataByKey($name);
 
@@ -131,7 +131,8 @@ class Form
             'name' => $name,
             'title' => $title,
             'attributes' => $attributes,
-            'options' => $options
+            'options' => $options,
+            'class' => $class
         ];
 
         return $this;
@@ -394,7 +395,8 @@ class Form
             + [
                 'name' => $this->generateName($field['name'] ?? ''),
                 'id' => $this->generateId($field['name'] ?? ''),
-                'type' => $field['type']
+                'type' => $field['type'],
+                'class' => $field['class'] ?? ''
             ];
 
         switch ($field['type']) {

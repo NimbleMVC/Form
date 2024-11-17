@@ -72,6 +72,42 @@ class FormBootstrap extends Form
     }
 
     /**
+     * Create select
+     * @param string $name
+     * @param array $options
+     * @param null|string|array $selectedKey
+     * @param string|null $title
+     * @param array $attributes
+     * @return $this
+     */
+    public function addSelect(
+        string $name,
+        array $options,
+        null|string|array $selectedKey = null,
+        ?string $title = null,
+        array $attributes = []
+    ): self
+    {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $selectedKey = $data;
+        }
+
+        return $this->addField(
+            type: 'select',
+            name: $name,
+            title: $title,
+            attributes: $attributes,
+            options: [
+                'options' => $options,
+                'selectedKey' => $selectedKey
+            ],
+            class: 'form-select'
+        );
+    }
+
+    /**
      * Render field
      * @param array $field
      * @return string
@@ -96,7 +132,7 @@ class FormBootstrap extends Form
                 'name' => $this->generateName($field['name'] ?? ''),
                 'id' => $this->generateId($field['name'] ?? ''),
                 'type' => $field['type'],
-                'class' => 'form-control'
+                'class' => $field['class'] ?? 'form-control'
             ];
 
         if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
