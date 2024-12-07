@@ -14,7 +14,6 @@ $(document).ready(function() {
             type: form.attr('method') || 'POST',
             data: formData,
             success: (response, status, xhr) => {
-                console.log(typeof response);
                 if (typeof response === 'object' && response.type === 'redirect' && response.url) {
                     window.location.href = response.url;
                 } else {
