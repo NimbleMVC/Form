@@ -261,6 +261,8 @@ class Form
         $formAttributes = [
             'action' => $this->action,
             'method' => $this->method->value,
+            'id' => $this->getId() ?? false,
+            'class' => 'ajax-form'
         ];
         $formContent = '';
 
@@ -268,11 +270,22 @@ class Form
             $formContent .= $this->renderField($field) . ($this->addLinebreak ? '<br />' : '');
         }
 
+        ob_start();
         if ($this->addFormNode) {
-            return '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
+            echo '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
         } else {
-            return $formContent;
+            echo $formContent;
         }
+        $content = ob_get_clean();
+
+        $request = new Request();
+
+        if ($request->getQuery('ajax', false) && $request->getQuery('form', false) === $this->getId()) {
+            ob_flush();
+            die($content);
+        }
+
+        return $content;
     }
 
     /**
