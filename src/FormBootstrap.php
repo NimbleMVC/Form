@@ -186,6 +186,18 @@ class FormBootstrap extends Form
             $html .= '<label for="' . $attributes['id'] . '" class="form-check-label ms-2">' . $field['title'] . '</label><br />';
         }
 
+        if ($field['type'] === 'span') {
+            $tag = '';
+            $tagContent = '';
+            $attributes = $field['attributes'];
+
+            if (isset($field['attributes']['class']) && $field['attributes']['class']) {
+                $tagContent = 'class="' . $field['attributes']['class'] . '"';
+            }
+
+            $html .= '<span ' . $tagContent . '>' . $field['title'] . '</span>';
+        }
+
         if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
             $html .= '<div class="validation text-danger">' . $this->validationErrors[$field['name']] . '</div>';
         }

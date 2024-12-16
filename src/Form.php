@@ -100,7 +100,7 @@ class Form
         }
 
         $validation = new Validation($validations, $this->getData());
-        $this->validationErrors = $validation->run();
+        $this->validationErrors = array_merge($this->validationErrors, $validation->run());
 
         return true;
     }
