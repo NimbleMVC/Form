@@ -176,11 +176,13 @@ class FormBootstrap extends Form
                 break;
         }
 
-        if ($field['title'] && $field['type'] !== 'checkbox') {
+        if ($field['title'] && $field['type'] !== 'checkbox' && $field['type'] !== 'span') {
             $html .= '<label for="' . $attributes['id'] . '" class="form-label">' . $field['title'] . '</label><br />';
         }
 
-        $html = $html . '<' . $tag . $this->generateAttributes($attributes) . '>' . $tagContent . '</' . $tag . '>';
+        if ($field['type'] !== 'span') {
+            $html = $html . '<' . $tag . $this->generateAttributes($attributes) . '>' . $tagContent . '</' . $tag . '>';
+        }
 
         if ($field['type'] === 'checkbox') {
             $html .= '<label for="' . $attributes['id'] . '" class="form-check-label ms-2">' . $field['title'] . '</label><br />';
@@ -191,7 +193,7 @@ class FormBootstrap extends Form
             $tagContent = '';
             $attributes = $field['attributes'];
 
-            if (isset($field['attributes']['class']) && $field['attributes']['class']) {
+            if (!empty($field['attributes']['class'])) {
                 $tagContent = 'class="' . $field['attributes']['class'] . '"';
             }
 
