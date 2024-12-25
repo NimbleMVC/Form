@@ -1,13 +1,15 @@
 $(document).ready(function() {
-    $('form.ajax-form[id!=""]').on('submit', function(event) {
+    $(document).on('submit', 'form.ajax-form[id!=""]', function(event) {
         event.preventDefault();
 
         const form = $(this),
             formData = form.serialize();
 
         let urlObj = new URL(window.location.href);
-        urlObj.searchParams.append('ajax', 'form');
-        urlObj.searchParams.append('form', $(this).attr('id'));
+
+        if ($(this).closest('[data-url]')) {
+            urlObj = $(this).closest('[data-url]').attr('data-url');
+        }
 
         $.ajax({
             url: urlObj.toString(),
@@ -25,7 +27,11 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Błąd:', error);
+                if (typeof xhr.responseJSON === 'object' && xhr.responseJSON.type === 'redirect' && xhr.responseJSON.url) {
+                    window.location.href = xhr.responseJSON.url;
+                }
+
+                console.error('Error:', error);
             }
         });
     });
