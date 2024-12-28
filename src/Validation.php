@@ -119,7 +119,7 @@ class Validation
     {
         switch ($name) {
             case 'required':
-                if (!$data || empty($data) || empty(trim($data))) {
+                if (trim($data) === '') {
                     throw new ValidationException(self::$language['required']);
                 }
 
