@@ -8,7 +8,7 @@ $(document).ready(function() {
         let urlObj = new URL(window.location.href);
 
         if ($(this).closest('[data-url]').length > 0) {
-            urlObj = new URL($(this).closest('[data-url]').attr('data-url'));
+            urlObj = new URL(window.location.origin + $(this).closest('[data-url]').attr('data-url'));
         }
 
         urlObj.searchParams.append('ajax', 'form');
