@@ -31,13 +31,15 @@ class FormBootstrap extends Form
     /**
      * Start group
      * @param int $col
+     * @param array $attributes
      * @return self
      */
-    public function startGroup(int $col = 6): self
+    public function startGroup(int $col = 6, array $attributes = []): self
     {
         $this->fields[] = [
             'type' => 'group-start',
-            'col' => $col
+            'col' => $col,
+            'attributes' => $attributes
         ];
 
         return $this;
@@ -116,7 +118,8 @@ class FormBootstrap extends Form
     {
         if ($field['type'] === 'group-start') {
             $this->col = $field['col'];
-            return '<div class="row">';
+            $field['attributes']['class'] = trim(($field['attributes']['class'] ?? '') . ' row');
+            return '<div ' . $this->generateAttributes($field['attributes']) . '>';
         } elseif ($field['type'] === 'group-stop') {
             $this->col = null;
             return '</div>';
