@@ -3,6 +3,7 @@
 namespace Nimblephp\form;
 
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\form\Interfaces\FormBuilderInterface;
 use Nimblephp\framework\Exception\NotFoundException;
 use Nimblephp\framework\Interfaces\ControllerInterface;
@@ -78,6 +79,25 @@ abstract class FormBuilder implements FormBuilderInterface
         }
 
         return $formBuilder->form->render();
+    }
+
+    /**
+     * Add error
+     * @param string $name
+     * @param string $error
+     * @return void
+     */
+    public function addError(string $name, string $error): void
+    {
+        $this->form->validation(
+            [
+                $name => [
+                    function () use ($error) {
+                        throw new ValidationException($error);
+                    }
+                ]
+            ]
+        );
     }
 
 }
