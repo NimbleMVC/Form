@@ -45,6 +45,12 @@ abstract class FormBuilder implements FormBuilderInterface
     protected ?ControllerInterface $controller = null;
 
     /**
+     * Input data
+     * @var array
+     */
+    protected array $data = [];
+
+    /**
      * Create default data
      */
     public function __construct(?ControllerInterface $controller = null)
@@ -57,10 +63,11 @@ abstract class FormBuilder implements FormBuilderInterface
      * Render form
      * @param string $name
      * @param ControllerInterface|null $controller
+     * @param array $data
      * @return string
      * @throws NotFoundException
      */
-    public static function render(string $name, ?ControllerInterface $controller = null): string
+    public static function generate(string $name, ?ControllerInterface $controller = null, array $data = []): string
     {
         $class = '\src\Form\\' . $name;
 
@@ -70,6 +77,7 @@ abstract class FormBuilder implements FormBuilderInterface
 
         /** @var FormBuilder $formBuilder */
         $formBuilder = new $class($controller);
+        $formBuilder->data = $data;
         $formBuilder->init();
         $formBuilder->create();
         $formBuilder->form->validation($formBuilder->validation());
