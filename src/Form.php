@@ -2,7 +2,6 @@
 
 namespace Nimblephp\form;
 
-use Krzysztofzylka\Arrays\Arrays;
 use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\form\Traits\Field;
 use Nimblephp\form\Traits\Helpers;
