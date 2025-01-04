@@ -6,9 +6,12 @@ use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\form\Interfaces\FormBuilderInterface;
 use Nimblephp\framework\Exception\NotFoundException;
 use Nimblephp\framework\Interfaces\ControllerInterface;
+use Nimblephp\framework\Traits\LoadModelTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
 {
+
+    use LoadModelTrait;
 
     /**
      * Form instance
@@ -41,6 +44,15 @@ abstract class FormBuilder implements FormBuilderInterface
     protected ?ControllerInterface $controller = null;
 
     /**
+     * Create default data
+     */
+    public function __construct(?ControllerInterface $controller = null)
+    {
+        $this->controller = $controller;
+        $this->form = new Form($this->action, $this->method);
+    }
+
+    /**
      * Render form
      * @param string $name
      * @param ControllerInterface|null $controller
@@ -66,20 +78,6 @@ abstract class FormBuilder implements FormBuilderInterface
         }
 
         return $formBuilder->form->render();
-    }
-
-    /**
-     * Create default data
-     */
-    public function __construct(?ControllerInterface $controller = null)
-    {
-        $this->controller = $controller;
-
-        if ($this->layout === 'bootstrap') {
-            $this->form = new FormBootstrap($this->action, $this->method);
-        } else {
-            $this->form = new Form($this->action, $this->method);
-        }
     }
 
 }
