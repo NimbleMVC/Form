@@ -1,11 +1,13 @@
 (function($) {
     $.fn.ajaxform = function(options) {
         const defaults = {
-            onSuccess: null,
-            onError: null
-        };
+                onSuccess: null,
+                onError: null
+            },
+            settings = $.extend({}, defaults, options),
+            debug = false;
 
-        const settings = $.extend({}, defaults, options);
+        console.log('form', $(this), settings, options)
 
         return this.each(function() {
             const form = $(this);
@@ -30,6 +32,10 @@
                     type: form.attr('method') || 'POST',
                     data: formData,
                     success: function(response, status, xhr) {
+                        if (debug) {
+                            console.log('ajaxform success', response, status, xhr);
+                        }
+
                         let preventDefault = false;
 
                         form.trigger('ajaxform.success', [response, form, function() {
@@ -53,6 +59,10 @@
                         }
                     },
                     error: function(xhr, status, error) {
+                        if (debug) {
+                            console.log('ajaxform error', xhr, status, error);
+                        }
+
                         let preventDefault = false;
 
                         form.trigger('ajaxform.error', [xhr, status, error, form, function() {
@@ -75,8 +85,4 @@
             });
         });
     };
-
-    $(document).ready(function() {
-        $('form.ajax-form').ajaxform();
-    });
 })(jQuery);

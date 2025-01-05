@@ -143,4 +143,44 @@ class Form
         return true;
     }
 
+    /**
+     * Render html form
+     * @return string
+     */
+    public function render(): string
+    {
+        if ($this->id) {
+            $this->addInputHidden('formId', $this->getId());
+        }
+
+        $formContent = '';
+        $formAttributes = [
+            'action' => $this->action,
+            'method' => $this->method->value,
+            'id' => $this->getId() ?? false,
+            'class' => 'ajax-form'
+        ];
+
+        foreach ($this->fields as $field) {
+            $formContent .= $this->renderField($field);
+        }
+
+        ob_start();
+
+        if ($this->addFormNode) {
+            echo '<form' . $this->generateAttributes($formAttributes) . '>' . $formContent . '</form>';
+        } else {
+            echo $formContent;
+        }
+
+        $content = ob_get_clean();
+
+        if ($this->request->isAjax() && $this->request->getQuery('form', false) === $this->getId()) {
+            ob_flush();
+            die($content);
+        }
+
+        return $content . '<script>$("#' . $this->getId() . '").ajaxform();</script>';
+    }
+
 }
