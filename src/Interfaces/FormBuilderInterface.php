@@ -29,4 +29,12 @@ interface FormBuilderInterface
      */
     public function validation(): array;
 
+    /**
+     * Add error
+     * @param string $name
+     * @param string $error
+     * @return void
+     */
+    public function addError(string $name, string $error): void;
+
 }

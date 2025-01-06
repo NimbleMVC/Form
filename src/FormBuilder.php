@@ -3,12 +3,16 @@
 namespace Nimblephp\form;
 
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\form\Interfaces\FormBuilderInterface;
 use Nimblephp\framework\Exception\NotFoundException;
 use Nimblephp\framework\Interfaces\ControllerInterface;
+use Nimblephp\framework\Traits\LoadModelTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
 {
+
+    use LoadModelTrait;
 
     /**
      * Form instance
@@ -41,13 +45,29 @@ abstract class FormBuilder implements FormBuilderInterface
     protected ?ControllerInterface $controller = null;
 
     /**
+     * Input data
+     * @var array
+     */
+    protected array $data = [];
+
+    /**
+     * Create default data
+     */
+    public function __construct(?ControllerInterface $controller = null)
+    {
+        $this->controller = $controller;
+        $this->form = new Form($this->action, $this->method);
+    }
+
+    /**
      * Render form
      * @param string $name
      * @param ControllerInterface|null $controller
+     * @param array $data
      * @return string
      * @throws NotFoundException
      */
-    public static function render(string $name, ?ControllerInterface $controller = null): string
+    public static function generate(string $name, ?ControllerInterface $controller = null, array $data = []): string
     {
         $class = '\src\Form\\' . $name;
 
@@ -57,6 +77,7 @@ abstract class FormBuilder implements FormBuilderInterface
 
         /** @var FormBuilder $formBuilder */
         $formBuilder = new $class($controller);
+        $formBuilder->data = $data;
         $formBuilder->init();
         $formBuilder->create();
         $formBuilder->form->validation($formBuilder->validation());
@@ -69,17 +90,22 @@ abstract class FormBuilder implements FormBuilderInterface
     }
 
     /**
-     * Create default data
+     * Add error
+     * @param string $name
+     * @param string $error
+     * @return void
      */
-    public function __construct(?ControllerInterface $controller = null)
+    public function addError(string $name, string $error): void
     {
-        $this->controller = $controller;
-
-        if ($this->layout === 'bootstrap') {
-            $this->form = new FormBootstrap($this->action, $this->method);
-        } else {
-            $this->form = new Form($this->action, $this->method);
-        }
+        $this->form->validation(
+            [
+                $name => [
+                    function () use ($error) {
+                        throw new ValidationException($error);
+                    }
+                ]
+            ]
+        );
     }
 
 }

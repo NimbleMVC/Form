@@ -1,32 +1,190 @@
 <?php
 
-namespace Nimblephp\form;
+namespace Nimblephp\form\Traits;
 
-use Nimblephp\debugbar\Debugbar;
-
-/**
- * Form generator (bootstrap)
- */
-class FormBootstrap extends Form
+trait Field
 {
 
     /**
-     * Add linebreak
-     * @var bool
+     * Fields
+     * @var array
      */
-    protected bool $addLinebreak = false;
-
-    /**
-     * Group active
-     * @var bool
-     */
-    protected bool $group = false;
+    private array $fields = [];
 
     /**
      * Col
      * @var int|null
      */
     protected ?int $col = null;
+
+    /**
+     * Add field
+     * @param string $type
+     * @param string|null $name
+     * @param ?string $title
+     * @param array $attributes
+     * @param array $options
+     * @param string|null $class
+     * @return self
+     */
+    public function addField(
+        string $type,
+        ?string $name,
+        ?string $title,
+        array $attributes = [],
+        array $options = [],
+        ?string $class = null
+    ): self
+    {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $attributes['value'] = $data;
+
+            if ($type === 'checkbox') {
+                $attributes['checked'] = 'checked';
+            }
+        }
+
+        $this->fields[] = [
+            'type' => $type,
+            'name' => $name,
+            'title' => $title,
+            'attributes' => $attributes,
+            'options' => $options,
+            'class' => $class
+        ];
+
+        return $this;
+    }
+    /**
+     * Add input
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addInput(string $name, ?string $title = null, array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'input',
+            name: $name,
+            title: $title,
+            attributes: $attributes
+        );
+    }
+
+    /**
+     * Add input
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addFloatInput(string $name, ?string $title = null, array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'number',
+            name: $name,
+            title: $title,
+            attributes: array_merge(['step' => '0.01'], $attributes)
+        );
+    }
+
+    /**
+     * Add textarea
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addTextarea(string $name, ?string $title = null, array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'textarea',
+            name: $name,
+            title: $title,
+            attributes: $attributes
+        );
+    }
+
+    /**
+     * Create select
+     * @param string $name
+     * @param array $options
+     * @param null|string|array $selectedKey
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addSelect(
+        string $name,
+        array $options,
+        null|string|array $selectedKey = null,
+        ?string $title = null,
+        array $attributes = []
+    ): self
+    {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $selectedKey = $data;
+        }
+
+        return $this->addField(
+            type: 'select',
+            name: $name,
+            title: $title,
+            attributes: $attributes,
+            options: [
+                'options' => $options,
+                'selectedKey' => $selectedKey
+            ],
+            class: 'form-select'
+        );
+    }
+
+    /**
+     * Add input hidden
+     * @param string $name
+     * @param string $value
+     * @return self
+     */
+    public function addInputHidden(string $name, string $value): self
+    {
+        $data = $this->getDataByKey($name);
+
+        if (!is_null($data)) {
+            $value = $data;
+        }
+
+        return $this->addField(
+            type: 'hidden',
+            name: $name,
+            title: null,
+            attributes: [
+                'value' => $value
+            ]
+        );
+    }
+
+    /**
+     * Add submit button
+     * @param string $value
+     * @param ?array $attributes
+     * @return self
+     */
+    public function addSubmitButton(string $value, ?array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'submit',
+            name: null,
+            title: null,
+            attributes: [
+                'value' => $value
+            ] + $attributes,
+        );
+    }
 
     /**
      * Start group
@@ -71,42 +229,6 @@ class FormBootstrap extends Form
         ];
 
         return $this;
-    }
-
-    /**
-     * Create select
-     * @param string $name
-     * @param array $options
-     * @param null|string|array $selectedKey
-     * @param string|null $title
-     * @param array $attributes
-     * @return $this
-     */
-    public function addSelect(
-        string $name,
-        array $options,
-        null|string|array $selectedKey = null,
-        ?string $title = null,
-        array $attributes = []
-    ): self
-    {
-        $data = $this->getDataByKey($name);
-
-        if (!is_null($data)) {
-            $selectedKey = $data;
-        }
-
-        return $this->addField(
-            type: 'select',
-            name: $name,
-            title: $title,
-            attributes: $attributes,
-            options: [
-                'options' => $options,
-                'selectedKey' => $selectedKey
-            ],
-            class: 'form-select'
-        );
     }
 
     /**
@@ -192,9 +314,7 @@ class FormBootstrap extends Form
         }
 
         if ($field['type'] === 'span') {
-            $tag = '';
             $tagContent = '';
-            $attributes = $field['attributes'];
 
             if (!empty($field['attributes']['class'])) {
                 $tagContent = 'class="' . $field['attributes']['class'] . '"';
