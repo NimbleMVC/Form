@@ -2,6 +2,7 @@
 
 namespace Nimblephp\form;
 
+use Exception;
 use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\form\Interfaces\FormBuilderInterface;
@@ -106,6 +107,26 @@ abstract class FormBuilder implements FormBuilderInterface
                 ]
             ]
         );
+    }
+
+    /**
+     * Magic get method
+     * @param string $name
+     * @return mixed
+     * @throws Exception
+     * @action disabled
+     */
+    public function __get(string $name)
+    {
+        $loadModel = $this->__getModel($name);
+
+        if (!is_null($loadModel)) {
+            return $loadModel;
+        }
+
+        $className = $this::class;
+
+        throw new Exception("Undefined property: {$className}::{$name}", 2);
     }
 
 }
