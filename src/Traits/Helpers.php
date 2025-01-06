@@ -61,7 +61,7 @@ trait Helpers
     protected function generateId(string $name): string
     {
         $return = '';
-        $explode = explode('/', $name);
+        $explode = preg_split('/[\/_]/', $name);
 
         foreach ($explode as $value) {
             $value = strtolower($value);
