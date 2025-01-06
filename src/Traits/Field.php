@@ -12,10 +12,10 @@ trait Field
     private array $fields = [];
 
     /**
-     * Col
-     * @var int|null
+     * Col attributes
+     * @var array
      */
-    protected ?int $col = null;
+    protected array $colAttributes = [];
 
     /**
      * Add field
@@ -192,12 +192,12 @@ trait Field
      * @param array $attributes
      * @return self
      */
-    public function startGroup(int $col = 6, array $attributes = []): self
+    public function startGroup(int $col = 6, array $rowAttributes = [], array $colAttributes = []): self
     {
         $this->fields[] = [
             'type' => 'group-start',
             'col' => $col,
-            'attributes' => $attributes
+            'attributes' => ['row' => $rowAttributes, 'col' => $colAttributes]
         ];
 
         return $this;
@@ -239,17 +239,23 @@ trait Field
     protected function renderField(array $field): string
     {
         if ($field['type'] === 'group-start') {
-            $this->col = $field['col'];
-            $field['attributes']['class'] = trim(($field['attributes']['class'] ?? '') . ' row');
-            return '<div ' . $this->generateAttributes($field['attributes']) . '>';
+            $this->colAttributes = $field['attributes']['col'];
+            $this->colAttributes['class'] =  'col-' . $field['col'] . ' ' . trim(($this->colAttributes['class'] ?? ''));
+            $field['attributes']['row']['class'] = trim(($field['attributes']['row']['class'] ?? '') . ' row');
+
+            return '<div ' . $this->generateAttributes($field['attributes']['row']) . '>';
         } elseif ($field['type'] === 'group-stop') {
-            $this->col = null;
+            $this->colAttributes = [];
+
             return '</div>';
         } elseif ($field['type'] === 'title') {
             return '<legend>' . $field['title'] . '</legend>';
         }
 
-        $html = '<div class="mb-3 ' . ($this->col > 0 ? ('col-' . $this->col) : '') . '">';
+        $divAttributes = $this->colAttributes;
+        $divAttributes['class'] = 'mb-3 ' . ($divAttributes['class'] ?? '');
+
+        $html = '<div ' . $this->generateAttributes($divAttributes) . '>';// . ' ' . ($this->col > 0 ? ('col-' . $this->col) : '') . '">';
         $tagContent = '';
         $tag = 'input';
         $attributes = $field['attributes']
