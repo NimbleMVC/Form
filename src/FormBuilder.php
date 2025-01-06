@@ -8,6 +8,8 @@ use Nimblephp\form\Exceptions\ValidationException;
 use Nimblephp\form\Interfaces\FormBuilderInterface;
 use Nimblephp\framework\Exception\NotFoundException;
 use Nimblephp\framework\Interfaces\ControllerInterface;
+use Nimblephp\framework\Log;
+use Nimblephp\framework\Request;
 use Nimblephp\framework\Traits\LoadModelTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
@@ -34,16 +36,16 @@ abstract class FormBuilder implements FormBuilderInterface
     protected ?string $action = null;
 
     /**
-     * Layout
-     * @var string|null
-     */
-    protected ?string $layout = null;
-
-    /**
      * Controller instance
      * @var ?ControllerInterface
      */
     protected ?ControllerInterface $controller = null;
+
+    /**
+     * Request instance
+     * @var Request
+     */
+    protected Request $request;
 
     /**
      * Input data
@@ -52,12 +54,20 @@ abstract class FormBuilder implements FormBuilderInterface
     protected array $data = [];
 
     /**
+     * Post data
+     * @var array
+     */
+    protected array $postData = [];
+
+    /**
      * Create default data
      */
     public function __construct(?ControllerInterface $controller = null)
     {
         $this->controller = $controller;
         $this->form = new Form($this->action, $this->method);
+        $this->request = new Request();
+        $this->postData = $this->request->getAllPost();
     }
 
     /**
@@ -127,6 +137,20 @@ abstract class FormBuilder implements FormBuilderInterface
         $className = $this::class;
 
         throw new Exception("Undefined property: {$className}::{$name}", 2);
+    }
+
+    /**
+     * Create logs
+     * @param string $message
+     * @param string $level
+     * @param array $content
+     * @return bool
+     * @throws Exception
+     * @action disabled
+     */
+    public function log(string $message, string $level = 'INFO', array $content = []): bool
+    {
+        return Log::log($message, $level, $content);
     }
 
 }
