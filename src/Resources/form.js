@@ -5,7 +5,7 @@
                 onError: null
             },
             settings = $.extend({}, defaults, options),
-            debug = false;
+            debug = true;
 
         console.log('form', $(this), settings, options)
 
@@ -17,7 +17,18 @@
 
                 form.trigger('ajaxform.submit', [form]);
 
-                const formData = form.serialize();
+                let formData = form.serializeArray();
+                const activeElement = document.activeElement;
+
+                if (activeElement && form.has(activeElement).length && $(activeElement).is('[type="submit"]')) {
+                    if ($(activeElement).attr('name') && $(activeElement).val()) {
+                        formData.push({
+                            name: $(activeElement).attr('name'),
+                            value: $(activeElement).val()
+                        })
+                    }
+                }
+
                 let urlObj = new URL(window.location.href);
 
                 if (form.closest('[data-url]').length > 0) {
