@@ -5,6 +5,8 @@ namespace Nimblephp\form\Traits;
 trait Field
 {
 
+    use Helpers;
+
     /**
      * Fields
      * @var array
@@ -39,10 +41,13 @@ trait Field
         $data = $this->getDataByKey($name);
 
         if (!is_null($data)) {
-            $attributes['value'] = $data;
 
             if ($type === 'checkbox') {
-                $attributes['checked'] = 'checked';
+                if (!empty($data)) {
+                    $attributes['checked'] = 'checked';
+                }
+            } else {
+                $attributes['value'] = $data;
             }
         }
 
@@ -57,6 +62,7 @@ trait Field
 
         return $this;
     }
+
     /**
      * Add input
      * @param string $name
@@ -68,6 +74,23 @@ trait Field
     {
         return $this->addField(
             type: 'input',
+            name: $name,
+            title: $title,
+            attributes: $attributes
+        );
+    }
+
+    /**
+     * Add checkbox
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addCheckbox(string $name, ?string $title = null, array $attributes = []): self
+    {
+        return $this->addField(
+            type: 'checkbox',
             name: $name,
             title: $title,
             attributes: $attributes
@@ -258,6 +281,7 @@ trait Field
         $html = '<div ' . $this->generateAttributes($divAttributes) . '>';// . ' ' . ($this->col > 0 ? ('col-' . $this->col) : '') . '">';
         $tagContent = '';
         $tag = 'input';
+        $additional = '';
         $attributes = $field['attributes']
             + [
                 'name' => $this->generateName($field['name'] ?? ''),
@@ -275,8 +299,20 @@ trait Field
                 $attributes['class'] = ($attributes['class'] ?? '') . ' btn btn-primary';
                 break;
             case 'checkbox':
+                unset($attributes['name']);
                 $attributes['class'] = str_replace('form-control', '', $attributes['class']);
                 $attributes['class'] = ($attributes['class'] ?? '') . ' form-check-input';
+                $attributes['onchange'] = '$(\'#_\' + $(this).attr(\'id\')).val($(this).is(\':checked\') ? 1 : 0)';
+
+                $additional .= $this->renderField([
+                    'type' => 'hidden',
+                    'name' => $this->generateName($field['name'] ?? ''),
+                    'title' => null,
+                    'attributes' => [
+                        'id' => '_' . $this->generateId($field['name'] ?? ''),
+                        'value' => $this->getDataByKey($field['name']) ? 1 : 0,
+                    ]
+                ]);
                 break;
             case 'textarea':
                 $tag = 'textarea';
@@ -333,7 +369,7 @@ trait Field
             $html .= '<div class="validation text-danger">' . $this->validationErrors[$field['name']] . '</div>';
         }
 
-        return $html . '</div>';
+        return $html . $additional . '</div>';
     }
 
 }

@@ -18,10 +18,13 @@ class Validation
      */
     public static array $language = [
         'required' => 'This field cannot be empty.',
+        'checked' => 'The checkbox must be checked.',
         'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
         'length_max' => 'The field cannot have more than {length} [character,characters,characters].',
         'is_email' => 'The provided email address is invalid.',
-        'is_integer' => 'The provided value must be an integer.'
+        'is_integer' => 'The provided value must be an integer.',
+        'invalidInt' => 'Invalid numeric value.',
+        'decimalMax' => 'The field may not have more than {decimal} [decimal place, decimal places].'
     ];
 
     /**
@@ -71,10 +74,13 @@ class Validation
                     self::$language,
                     [
                         'required' => 'Pole nie może być puste.',
+                        'checked' => 'Pole musi zostać zaznaczone.',
                         'length_min' => 'Pole nie może mieć mniej niż {length} [znak,znaki,znaków].',
                         'length_max' => 'Pole nie może mieć więcej niż {length} [znak,znaki,znaków].',
                         'isEmail' => 'Podany adres e-mail jest niepoprawny.',
-                        'isInteger' => 'Podana wartość musi być liczbą całkowitą.'
+                        'isInteger' => 'Podana wartość musi być liczbą całkowitą.',
+                        'invalidInt' => 'Niepoprawna wartość liczbowa.',
+                        'decimalMax' => 'Pole nie może mieć więcej niż {decimal} [miejsce, miejsca, miejsc] po przecinku.'
                     ]
                 );
         }
@@ -119,8 +125,14 @@ class Validation
     {
         switch ($name) {
             case 'required':
-                if (trim($data) === '') {
+                if (is_null($data) || trim($data) === '') {
                     throw new ValidationException(self::$language['required']);
+                }
+
+                break;
+            case 'checked':
+                if (!(bool)trim($data)) {
+                    throw new ValidationException(self::$language['checked']);
                 }
 
                 break;
@@ -155,6 +167,30 @@ class Validation
                 }
 
                 break;
+            case 'isDecimal':
+                $data = str_replace(',', '.', $data);
+
+                if (!is_numeric($data)) {
+                    throw new ValidationException(self::$language['invalidInt']);
+                }
+
+                if (strpos($data, '.') === false) {
+                    return;
+                }
+
+                $maxPlaces = 2;
+
+                if (is_array($customData) && array_key_exists('maxPlaces', $customData)) {
+                    $maxPlaces = $customData['maxPlaces'];
+                }
+
+                $decimalPart = explode('.', $data)[1];
+
+                if (strlen($decimalPart) > $maxPlaces) {
+                    $validation = str_replace('{decimal}', $maxPlaces, self::$language['decimalMax']);
+
+                    throw new ValidationException($this->replaceInflections($validation));
+                }
         }
     }
 
