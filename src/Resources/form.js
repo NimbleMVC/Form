@@ -5,9 +5,7 @@
                 onError: null
             },
             settings = $.extend({}, defaults, options),
-            debug = true;
-
-        console.log('form', $(this), settings, options)
+            debug = false;
 
         return this.each(function() {
             const form = $(this);
@@ -58,6 +56,10 @@
                                 window.location.href = response.url;
                             } else {
                                 const currentElement = document.getElementById(form.attr('id'));
+
+                                if (debug) {
+                                    console.log('ajaxform innerHTML', currentElement);
+                                }
 
                                 if (currentElement) {
                                     currentElement.innerHTML = response;
