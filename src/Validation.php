@@ -147,7 +147,7 @@ class Validation
                         throw new ValidationException($this->replaceInflections($validation));
                     }
 
-                    if ($max && strlen($data) > $max) {
+                    if ($max && strlen($data ?? '') > $max) {
                         $validation = str_replace('{length}', $max, self::$language['length_max']);
 
                         throw new ValidationException($this->replaceInflections($validation));
