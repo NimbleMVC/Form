@@ -210,6 +210,21 @@ trait Field
     }
 
     /**
+     * Add custom raw data
+     * @param string $content
+     * @return Field|\Nimblephp\form\Form
+     */
+    public function addRawCustomData(string $content): self
+    {
+        $this->fields[] = [
+            'type' => 'customRawData',
+            'content' => $content
+        ];
+
+        return $this;
+    }
+
+    /**
      * Start group
      * @param int $col
      * @param array $attributes
@@ -261,6 +276,10 @@ trait Field
      */
     protected function renderField(array $field): string
     {
+        if ($field['type'] === 'customRawData') {
+            return $field['content'];
+        }
+
         if ($field['type'] === 'group-start') {
             $this->colAttributes = $field['attributes']['col'];
             $this->colAttributes['class'] =  'col-' . $field['col'] . ' ' . trim(($this->colAttributes['class'] ?? ''));
