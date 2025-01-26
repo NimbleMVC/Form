@@ -13,6 +13,9 @@
             form.on('submit', function(event) {
                 event.preventDefault();
 
+                const submitButton = $(this).find(':submit');
+                submitButton.prop('disabled', true);
+
                 form.trigger('ajaxform.submit', [form]);
 
                 let formData = form.serializeArray();
@@ -70,6 +73,8 @@
                         if (typeof settings.onSuccess === 'function') {
                             settings.onSuccess(response, form);
                         }
+
+                        submitButton.prop('disabled', false);
                     },
                     error: function(xhr, status, error) {
                         if (debug) {
@@ -93,6 +98,8 @@
                         }
 
                         console.error('Error:', error);
+
+                        submitButton.prop('disabled', false);
                     }
                 });
             });
