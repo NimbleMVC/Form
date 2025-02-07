@@ -24,7 +24,8 @@ class Validation
         'is_email' => 'The provided email address is invalid.',
         'is_integer' => 'The provided value must be an integer.',
         'invalidInt' => 'Invalid numeric value.',
-        'decimalMax' => 'The field may not have more than {decimal} [decimal place, decimal places].'
+        'decimalMax' => 'The field may not have more than {decimal} [decimal place, decimal places].',
+        'invalidEnum' => 'Incorrect value.'
     ];
 
     /**
@@ -80,7 +81,8 @@ class Validation
                         'isEmail' => 'Podany adres e-mail jest niepoprawny.',
                         'isInteger' => 'Podana wartość musi być liczbą całkowitą.',
                         'invalidInt' => 'Niepoprawna wartość liczbowa.',
-                        'decimalMax' => 'Pole nie może mieć więcej niż {decimal} [miejsce, miejsca, miejsc] po przecinku.'
+                        'decimalMax' => 'Pole nie może mieć więcej niż {decimal} [miejsce, miejsca, miejsc] po przecinku.',
+                        'invalidEnum' => 'Nieprawidłowa wartość pola.'
                     ]
                 );
         }
@@ -191,6 +193,15 @@ class Validation
 
                     throw new ValidationException($this->replaceInflections($validation));
                 }
+
+                break;
+            case 'enum':
+                $names = array_column($customData::cases(), 'name');
+
+                if (!in_array($data, $names)) {
+                    throw new ValidationException(self::$language['invalidEnum']);
+                }
+                break;
         }
     }
 
