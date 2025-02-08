@@ -8,6 +8,8 @@ use Nimblephp\form\Enum\MethodEnum;
 use Nimblephp\form\Field\Field;
 use Nimblephp\form\Field\FieldCheckbox;
 use Nimblephp\form\Field\FieldInputHidden;
+use Nimblephp\form\Field\FieldSelect;
+use Nimblephp\form\Field\FieldTextarea;
 use Nimblephp\framework\Request;
 
 class Form
@@ -181,6 +183,69 @@ class Form
         $field = new FieldInputHidden('input');
         $field->setName($name);
         $field->setAttributes(['value' => $value]);
+        $field->setData($this->getDataByKey($name));
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Add float input
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return $this
+     */
+    public function addFloatInput(string $name, ?string $title = null, array $attributes = []): self
+    {
+        $attributes['step'] = '0.01';
+        $attributes['type'] = 'number';
+
+        return $this->addInput($name, $title, $attributes);
+    }
+
+    /**
+     * Add textarea
+     * @param string $name
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addTextarea(string $name, ?string $title = null, array $attributes = []): self
+    {
+        $field = new FieldTextarea('textarea');
+        $field->setName($name);
+        $field->setTitle($title);
+        $field->setAttributes($attributes);
+        $field->setData($this->getDataByKey($name));
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Create select
+     * @param string $name
+     * @param array $options
+     * @param null|string $selectedKey
+     * @param string|null $title
+     * @param array $attributes
+     * @return self
+     */
+    public function addSelect(
+        string $name,
+        array $options,
+        null|string $selectedKey = null,
+        ?string $title = null,
+        array $attributes = []
+    ): self
+    {
+        $field = new FieldSelect('select');
+        $field->setName($name);
+        $field->setTitle($title);
+        $field->setAttributes($attributes);
+        $field->setOptions($options);
+        $field->setSelectedKey($selectedKey);
         $field->setData($this->getDataByKey($name));
         $this->fields[] = $field;
 
