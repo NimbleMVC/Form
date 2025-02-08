@@ -5,6 +5,7 @@ namespace Nimblephp\form;
 use Krzysztofzylka\Arrays\Arrays;
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
 use Nimblephp\form\Enum\MethodEnum;
+use Nimblephp\form\Field\CustomContent;
 use Nimblephp\form\Field\Field;
 use Nimblephp\form\Field\FieldCheckbox;
 use Nimblephp\form\Field\FieldInputHidden;
@@ -266,6 +267,34 @@ class Form
         $field->setTitle($title);
         $field->setAttributes($attributes);
         $field->setData($this->getDataByKey($name));
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Add submit button
+     * @param string $value
+     * @param ?array $attributes
+     * @return self
+     */
+    public function addSubmitButton(string $value, ?array $attributes = []): self
+    {
+        $field = new Field('input');
+        $field->setAttributes(['class' => 'btn btn-primary w-100', ...$attributes, 'type' => 'submit', 'value' => $value]);
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Add custom content
+     * @param string $content
+     * @return $this
+     */
+    public function addCustomContent(string $content): self
+    {
+        $field = new CustomContent($content);
         $this->fields[] = $field;
 
         return $this;

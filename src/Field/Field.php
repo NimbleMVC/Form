@@ -3,8 +3,9 @@
 namespace Nimblephp\form\Field;
 
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
+use Nimblephp\form\Interfaces\FieldInterface;
 
-class Field
+class Field implements FieldInterface
 {
 
     /**
@@ -17,13 +18,13 @@ class Field
      * Field name
      * @var string|null
      */
-    protected ?string $name;
+    protected ?string $name = null;
 
     /**
      * Field title
      * @var string|null
      */
-    protected ?string $title;
+    protected ?string $title = null;
 
     /**
      * Field attributes
@@ -73,6 +74,10 @@ class Field
      */
     public function getId(): string
     {
+        if (is_null($this->name)) {
+            return '';
+        }
+
         $return = '';
         $explode = preg_split('/[\/_]/', $this->name);
 
@@ -90,6 +95,10 @@ class Field
      */
     public function getName(): ?string
     {
+        if (is_null($this->name)) {
+            return '';
+        }
+
         $core = str_starts_with($this->name, '/');
 
         if ($core) {
