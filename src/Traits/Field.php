@@ -329,7 +329,7 @@ trait Field
                     'title' => null,
                     'attributes' => [
                         'id' => '_' . $this->generateId($field['name'] ?? ''),
-                        'value' => $this->getDataByKey($field['name']) ? 1 : 0,
+                        'value' => isset($attributes['checked']) && $attributes['checked'] ? 1 : 0,
                     ]
                 ]);
                 break;
@@ -357,8 +357,19 @@ trait Field
 
                     $value = $key ? 'value="' . $key . '" ' : '';
 
-                    $tagContent .= '<option ' . $value . ($selected ? 'selected' : '') . '>' . $name . '</option>';
+                    if (!empty($field['attributes']['optionsClass'])) {
+                        if (!is_array($field['attributes']['optionsClass'])) {
+                            $tagContent .= '<option ' . $value . ($selected ? 'selected' : '') . ' class="' . $field['attributes']['optionsClass'] . '"' . '>' . $name . '</option>';
+                        } else {
+                            $tagContent .= '<option ' . $value . ($selected ? 'selected' : '') . ' class="' . $field['attributes']['optionsClass'][$key] . '"' . '>' . $name . '</option>';
+                        }
+                    } else {
+                        $tagContent .= '<option ' . $value . ($selected ? 'selected' : '') . '>' . $name . '</option>';
+                    }
                 }
+
+                $attributes['class'] = !empty($field['attributes']['class']) ? $field['attributes']['class'] : 'form-select';
+
                 break;
         }
 
