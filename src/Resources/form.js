@@ -20,10 +20,10 @@
 
                 const submitButton = $(this).find(':submit');
 
-                if (submitButton.attr('name') && submitButton.val()) {
+                if ($(clickedSubmit).attr('name') && $(clickedSubmit).val()) {
                     $('<input type="hidden">')
-                        .attr('name', submitButton.attr('name'))
-                        .val(submitButton.val())
+                        .attr('name', $(clickedSubmit).attr('name'))
+                        .val($(clickedSubmit).val())
                         .appendTo($(this));
                 }
 
