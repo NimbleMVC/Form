@@ -19,6 +19,14 @@
                 event.preventDefault();
 
                 const submitButton = $(this).find(':submit');
+
+                if (submitButton.attr('name') && submitButton.val()) {
+                    $('<input type="hidden">')
+                        .attr('name', submitButton.attr('name'))
+                        .val(submitButton.val())
+                        .appendTo($(this));
+                }
+
                 submitButton.prop('disabled', true);
 
                 form.trigger('ajaxform.submit', [form]);
