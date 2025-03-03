@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimblephp\form\Traits;
+namespace NimblePHP\Form\Traits;
 
 trait Field
 {
@@ -212,7 +212,7 @@ trait Field
     /**
      * Add custom raw data
      * @param string $content
-     * @return Field|\Nimblephp\form\Form
+     * @return Field|\NimblePHP\Form\Form
      */
     public function addRawCustomData(string $content): self
     {

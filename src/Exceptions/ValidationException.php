@@ -1,8 +1,8 @@
 <?php
 
-namespace Nimblephp\form\Exceptions;
+namespace NimblePHP\Form\Exceptions;
 
-use Nimblephp\framework\Exception\NimbleException;
+use NimblePHP\Framework\Exception\NimbleException;
 
 class ValidationException extends NimbleException
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimblephp\form\Interfaces;
+namespace NimblePHP\Form\Interfaces;
 
 interface FormBuilderInterface
 {

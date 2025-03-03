@@ -1,10 +1,10 @@
 <?php
 
-namespace Nimblephp\form;
+namespace NimblePHP\Form;
 
 use Krzysztofzylka\Arrays\Arrays;
-use Nimblephp\form\Exceptions\ValidationException;
-use Nimblephp\framework\Exception\NimbleException;
+use NimblePHP\Form\Exceptions\ValidationException;
+use NimblePHP\Framework\Exception\NimbleException;
 
 /**
  * Form validation
@@ -176,7 +176,7 @@ class Validation
                     throw new ValidationException(self::$language['invalidInt']);
                 }
 
-                if (strpos($data, '.') === false) {
+                if (!str_contains($data, '.')) {
                     return;
                 }
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace Nimblephp\form;
+namespace NimblePHP\Form;
 
 use Exception;
-use Nimblephp\form\Enum\MethodEnum;
-use Nimblephp\form\Exceptions\ValidationException;
-use Nimblephp\form\Interfaces\FormBuilderInterface;
-use Nimblephp\framework\Exception\NotFoundException;
-use Nimblephp\framework\Interfaces\ControllerInterface;
-use Nimblephp\framework\Log;
-use Nimblephp\framework\Request;
-use Nimblephp\framework\Traits\LoadModelTrait;
+use NimblePHP\Form\Enum\MethodEnum;
+use NimblePHP\Form\Exceptions\ValidationException;
+use NimblePHP\Form\Interfaces\FormBuilderInterface;
+use NimblePHP\Framework\Exception\NotFoundException;
+use NimblePHP\Framework\Interfaces\ControllerInterface;
+use NimblePHP\Framework\Log;
+use NimblePHP\Framework\Request;
+use NimblePHP\Framework\Traits\LoadModelTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
 {
