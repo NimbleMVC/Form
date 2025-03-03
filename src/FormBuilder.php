@@ -120,26 +120,6 @@ abstract class FormBuilder implements FormBuilderInterface
     }
 
     /**
-     * Magic get method
-     * @param string $name
-     * @return mixed
-     * @throws Exception
-     * @action disabled
-     */
-    public function __get(string $name)
-    {
-        $loadModel = $this->__getModel($name);
-
-        if (!is_null($loadModel)) {
-            return $loadModel;
-        }
-
-        $className = $this::class;
-
-        throw new Exception("Undefined property: {$className}::{$name}", 2);
-    }
-
-    /**
      * Create logs
      * @param string $message
      * @param string $level
