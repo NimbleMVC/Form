@@ -6,6 +6,8 @@ use Exception;
 use NimblePHP\Form\Enum\MethodEnum;
 use NimblePHP\Form\Exceptions\ValidationException;
 use NimblePHP\Form\Interfaces\FormBuilderInterface;
+use NimblePHP\Framework\DependencyInjector;
+use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Exception\NotFoundException;
 use NimblePHP\Framework\Interfaces\ControllerInterface;
 use NimblePHP\Framework\Log;
@@ -39,7 +41,7 @@ abstract class FormBuilder implements FormBuilderInterface
      * Controller instance
      * @var ?ControllerInterface
      */
-    protected ?ControllerInterface $controller = null;
+    public ?ControllerInterface $controller = null;
 
     /**
      * Request instance
@@ -77,17 +79,19 @@ abstract class FormBuilder implements FormBuilderInterface
      * @param array $data
      * @return string
      * @throws NotFoundException
+     * @throws NimbleException
      */
     public static function generate(string $name, ?ControllerInterface $controller = null, array $data = []): string
     {
-        $class = '\src\Form\\' . $name;
+        $class = '\App\Form\\' . str_replace('/', '\\', $name);
 
         if (!class_exists($class)) {
             throw new NotFoundException('Not found form ' . $name);
         }
 
-        /** @var FormBuilder $formBuilder */
+        /** @var \NimblePHP\Form\FormBuilder $formBuilder */
         $formBuilder = new $class($controller);
+        DependencyInjector::inject($formBuilder);
         $formBuilder->data = $data;
         $formBuilder->init();
         $formBuilder->create();
