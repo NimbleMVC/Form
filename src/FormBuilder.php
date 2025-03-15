@@ -1,16 +1,18 @@
 <?php
 
-namespace Nimblephp\form;
+namespace NimblePHP\Form;
 
 use Exception;
-use Nimblephp\form\Enum\MethodEnum;
-use Nimblephp\form\Exceptions\ValidationException;
-use Nimblephp\form\Interfaces\FormBuilderInterface;
-use Nimblephp\framework\Exception\NotFoundException;
-use Nimblephp\framework\Interfaces\ControllerInterface;
-use Nimblephp\framework\Log;
-use Nimblephp\framework\Request;
-use Nimblephp\framework\Traits\LoadModelTrait;
+use NimblePHP\Form\Enum\MethodEnum;
+use NimblePHP\Form\Exceptions\ValidationException;
+use NimblePHP\Form\Interfaces\FormBuilderInterface;
+use NimblePHP\Framework\DependencyInjector;
+use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Exception\NotFoundException;
+use NimblePHP\Framework\Interfaces\ControllerInterface;
+use NimblePHP\Framework\Log;
+use NimblePHP\Framework\Request;
+use NimblePHP\Framework\Traits\LoadModelTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
 {
@@ -39,7 +41,7 @@ abstract class FormBuilder implements FormBuilderInterface
      * Controller instance
      * @var ?ControllerInterface
      */
-    protected ?ControllerInterface $controller = null;
+    public ?ControllerInterface $controller = null;
 
     /**
      * Request instance
@@ -77,17 +79,19 @@ abstract class FormBuilder implements FormBuilderInterface
      * @param array $data
      * @return string
      * @throws NotFoundException
+     * @throws NimbleException
      */
     public static function generate(string $name, ?ControllerInterface $controller = null, array $data = []): string
     {
-        $class = '\src\Form\\' . $name;
+        $class = '\App\Form\\' . str_replace('/', '\\', $name);
 
         if (!class_exists($class)) {
             throw new NotFoundException('Not found form ' . $name);
         }
 
-        /** @var FormBuilder $formBuilder */
+        /** @var \NimblePHP\Form\FormBuilder $formBuilder */
         $formBuilder = new $class($controller);
+        DependencyInjector::inject($formBuilder);
         $formBuilder->data = $data;
         $formBuilder->init();
         $formBuilder->create();
@@ -117,26 +121,6 @@ abstract class FormBuilder implements FormBuilderInterface
                 ]
             ]
         );
-    }
-
-    /**
-     * Magic get method
-     * @param string $name
-     * @return mixed
-     * @throws Exception
-     * @action disabled
-     */
-    public function __get(string $name)
-    {
-        $loadModel = $this->__getModel($name);
-
-        if (!is_null($loadModel)) {
-            return $loadModel;
-        }
-
-        $className = $this::class;
-
-        throw new Exception("Undefined property: {$className}::{$name}", 2);
     }
 
     /**

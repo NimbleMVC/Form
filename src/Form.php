@@ -1,18 +1,18 @@
 <?php
 
-namespace Nimblephp\form;
+namespace NimblePHP\Form;
 
-use Nimblephp\form\Enum\MethodEnum;
-use Nimblephp\form\Traits\Field;
-use Nimblephp\form\Traits\Helpers;
-use Nimblephp\framework\Request;
+use NimblePHP\Form\Enum\MethodEnum;
+use NimblePHP\Form\Traits\Field;
+use NimblePHP\Form\Traits\Helpers;
+use NimblePHP\Framework\Request;
 
 class Form
 {
 
     use Helpers;
     use Field;
-    use \Nimblephp\form\Traits\Validation;
+    use \NimblePHP\Form\Traits\Validation;
 
     /**
      * Form action

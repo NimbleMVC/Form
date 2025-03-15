@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimblephp\form\Enum;
+namespace NimblePHP\Form\Enum;
 
 /**
  * Form method

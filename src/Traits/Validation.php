@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimblephp\form\Traits;
+namespace NimblePHP\Form\Traits;
 
 trait Validation
 {
@@ -28,7 +28,7 @@ trait Validation
             return false;
         }
 
-        $validation = new \Nimblephp\form\Validation($validations, $this->getData());
+        $validation = new \NimblePHP\Form\Validation($validations, $this->getData());
         $this->validationErrors = array_merge($this->validationErrors, $validation->run());
 
         return true;

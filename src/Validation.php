@@ -1,10 +1,10 @@
 <?php
 
-namespace Nimblephp\form;
+namespace NimblePHP\Form;
 
 use Krzysztofzylka\Arrays\Arrays;
-use Nimblephp\form\Exceptions\ValidationException;
-use Nimblephp\framework\Exception\NimbleException;
+use NimblePHP\Form\Exceptions\ValidationException;
+use NimblePHP\Framework\Exception\NimbleException;
 
 /**
  * Form validation
@@ -21,8 +21,8 @@ class Validation
         'checked' => 'The checkbox must be checked.',
         'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
         'length_max' => 'The field cannot have more than {length} [character,characters,characters].',
-        'is_email' => 'The provided email address is invalid.',
-        'is_integer' => 'The provided value must be an integer.',
+        'isEmail' => 'The provided email address is invalid.',
+        'isInteger' => 'The provided value must be an integer.',
         'invalidInt' => 'Invalid numeric value.',
         'decimalMax' => 'The field may not have more than {decimal} [decimal place, decimal places].',
         'invalidEnum' => 'Incorrect value.'
@@ -176,7 +176,7 @@ class Validation
                     throw new ValidationException(self::$language['invalidInt']);
                 }
 
-                if (strpos($data, '.') === false) {
+                if (!str_contains($data, '.')) {
                     return;
                 }
 

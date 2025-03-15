@@ -1,9 +1,9 @@
 <?php
 
-namespace Nimblephp\form\Traits;
+namespace NimblePHP\Form\Traits;
 
 use Krzysztofzylka\Arrays\Arrays;
-use Nimblephp\form\Enum\MethodEnum;
+use NimblePHP\Form\Enum\MethodEnum;
 
 trait Helpers
 {
