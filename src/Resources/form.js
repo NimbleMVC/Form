@@ -1,19 +1,32 @@
-(function($) {
-    $.fn.ajaxform = function(options) {
+(function ($) {
+    $.fn.ajaxform = function (options) {
         const defaults = {
-                onSuccess: null,
-                onError: null
-            },
+            onSuccess: null,
+            onError: null
+        },
             settings = $.extend({}, defaults, options),
             debug = false;
 
-        return this.each(function() {
+        return this.each(function () {
             const form = $(this);
+            let clickedSubmit = null;
 
-            form.on('submit', function(event) {
+            form.find(':submit').on('click', function () {
+                clickedSubmit = this;
+            });
+
+            form.on('submit', function (event) {
                 event.preventDefault();
 
                 const submitButton = $(this).find(':submit');
+
+                if ($(clickedSubmit).attr('name') && $(clickedSubmit).val()) {
+                    $('<input type="hidden">')
+                        .attr('name', $(clickedSubmit).attr('name'))
+                        .val($(clickedSubmit).val())
+                        .appendTo($(this));
+                }
+
                 submitButton.prop('disabled', true);
 
                 form.trigger('ajaxform.submit', [form]);
@@ -43,14 +56,14 @@
                     url: urlObj.toString(),
                     type: form.attr('method') || 'POST',
                     data: formData,
-                    success: function(response, status, xhr) {
+                    success: function (response, status, xhr) {
                         if (debug) {
                             console.log('ajaxform success', response, status, xhr);
                         }
 
                         let preventDefault = false;
 
-                        form.trigger('ajaxform.success', [response, form, function() {
+                        form.trigger('ajaxform.success', [response, form, function () {
                             preventDefault = true;
                         }]);
 
@@ -58,7 +71,7 @@
                             if (typeof response === 'object' && response.type === 'redirect' && response.url) {
                                 window.location.href = response.url;
                             } else {
-                                const currentElement = document.getElementById(form.attr('id'));
+                                let currentElement = document.getElementById(form.attr('id'));
 
                                 if (debug) {
                                     console.log('ajaxform innerHTML', currentElement);
@@ -67,23 +80,83 @@
                                 if (currentElement) {
                                     currentElement.innerHTML = response;
                                 }
+
+                                $('.confirm-close').on('click', function (e) {
+                                    e.preventDefault();
+                                    formData.push({ name: 'correction', value: true });
+                                    $modal = $(this).closest('.modal');
+                                    
+                                    $.ajax({
+                                        url: urlObj.pathname,
+                                        type: form.attr('method') || 'POST',
+                                        data: formData,
+                                        success: function (response, status, xhr) {
+                                            submitButton.prop('disabled', false);
+                                            $newBody = $modal.find('.modal-body');
+                                            $modal.find('form').remove();
+                                            $newBody.html(response);
+                                        }
+                                    });
+                                });
+
+                                $('.confirm-accept').on('click', function (e) {
+                                    e.preventDefault();
+                                    formData.push({ name: 'confirm', value: true });
+                                    const $triggerAccept = $(this);
+
+                                    $.ajax({
+                                        url: urlObj.toString(),
+                                        type: form.attr('method') || 'POST',
+                                        data: formData,
+                                        success: function (response, status, xhr) {
+                                            if (typeof response === 'object' && response.type === 'redirect' && response.url) {
+                                                $modal = $triggerAccept.closest('.modal');
+
+                                                let responseUrl = response.url.split('/');
+                                                let urlArr = responseUrl.filter(function (e) {
+                                                    return e;
+                                                });
+
+                                                if (urlArr.length > 2) {
+                                                    $.ajax({
+                                                        url: response.url,
+                                                        type: form.attr('method') || 'POST',
+                                                        success: function (response, status, xhr) {
+                                                            submitButton.prop('disabled', false);
+                                                            form.trigger('ajaxform.nextStep', [form]);
+                                                            
+                                                            $newBody = $modal.find('.modal-body');
+                                                            $modal.find('form').remove();
+                                                            $newBody.html(response);
+                                                        }
+                                                    });
+
+                                                } else {
+                                                    $modal.find('.modal-header').find('[data-bs-dismiss="modal"]').trigger('click');
+                                                    $modal.remove();
+                                                    window.location.href = response.url;
+                                                }
+                                            } else {
+                                                submitButton.prop('disabled', false);
+                                            }
+                                        }
+                                    });
+                                });
                             }
                         }
 
                         if (typeof settings.onSuccess === 'function') {
                             settings.onSuccess(response, form);
                         }
-
-                        submitButton.prop('disabled', false);
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         if (debug) {
                             console.log('ajaxform error', xhr, status, error);
                         }
 
                         let preventDefault = false;
 
-                        form.trigger('ajaxform.error', [xhr, status, error, form, function() {
+                        form.trigger('ajaxform.error', [xhr, status, error, form, function () {
                             preventDefault = true;
                         }]);
 
