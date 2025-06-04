@@ -2,8 +2,15 @@
 
 namespace NimblePHP\Form\Traits;
 
+use NimblePHP\Form\Form;
+
 trait Validation
 {
+
+    /**
+     * Global validations
+     */
+    public static array $VALIDATIONS = [];
 
     /**
      * Validation errors
@@ -30,6 +37,7 @@ trait Validation
 
         $validation = new \NimblePHP\Form\Validation($validations, $this->getData());
         $this->validationErrors = array_merge($this->validationErrors, $validation->run());
+        Form::$VALIDATIONS = $this->validationErrors;
 
         return true;
     }
@@ -43,6 +51,7 @@ trait Validation
     public function addValidation(string $fieldName, string $validationText): void
     {
         $this->validationErrors[$fieldName] = $validationText;
+        Form::$VALIDATIONS[$fieldName] = $this->validationErrors;
     }
 
 }
