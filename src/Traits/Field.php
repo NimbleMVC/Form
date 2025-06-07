@@ -295,7 +295,7 @@ trait Field
         }
 
         $divAttributes = $this->colAttributes;
-        $divAttributes['class'] = 'mb-3 ' . ($divAttributes['class'] ?? '');
+        $divAttributes['class'] = ($field['type'] !== 'hidden' ? 'mb-3 ' : '') . ($divAttributes['class'] ?? '');
 
         $html = '<div ' . $this->generateAttributes($divAttributes) . '>';// . ' ' . ($this->col > 0 ? ('col-' . $this->col) : '') . '">';
         $tagContent = '';
