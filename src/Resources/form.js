@@ -9,6 +9,7 @@
 
         return this.each(function () {
             const form = $(this);
+            form.attr('data-ajaxform', true);
             let clickedSubmit = null;
 
             form.find(':submit').on('click', function () {
@@ -85,7 +86,7 @@
                                     e.preventDefault();
                                     formData.push({ name: 'correction', value: true });
                                     $modal = $(this).closest('.modal');
-                                    
+
                                     $.ajax({
                                         url: urlObj.pathname,
                                         type: form.attr('method') || 'POST',
@@ -124,7 +125,7 @@
                                                         success: function (response, status, xhr) {
                                                             submitButton.prop('disabled', false);
                                                             form.trigger('ajaxform.nextStep', [form]);
-                                                            
+
                                                             $newBody = $modal.find('.modal-body');
                                                             $modal.find('form').remove();
                                                             $newBody.html(response);
