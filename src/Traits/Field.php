@@ -154,6 +154,12 @@ trait Field
             $selectedKey = $data;
         }
 
+        $multiple = false;
+
+        if ($attributes['multiple'] ?? false) {
+            $multiple = true;
+        }
+
         return $this->addField(
             type: 'select',
             name: $name,
@@ -161,7 +167,8 @@ trait Field
             attributes: $attributes,
             options: [
                 'options' => $options,
-                'selectedKey' => $selectedKey
+                'selectedKey' => $selectedKey,
+                'multiple' => $multiple
             ],
             class: 'form-select'
         );
@@ -344,7 +351,19 @@ trait Field
             case 'select':
                 $tag = 'select';
 
+                if ($field['options']['multiple']) {
+                    $attributes['multiple'] = $field['options']['multiple'] ?? false;
+                }
+
                 foreach ($field['options']['options'] as $key => $name) {
+                    if (isset($attributes['multiple']) && $attributes['multiple']) {
+                        if (is_string($field['options']['selectedKey']) && json_validate($field['options']['selectedKey'])) {
+                            $field['options']['selectedKey'] = json_decode($field['options']['selectedKey'], true);
+                        } elseif (!is_array($field['options']['selectedKey'])) {
+                            $field['options']['selectedKey'] = [$field['options']['selectedKey']];
+                        }
+                    }
+
                     if (!is_null($field['options']['selectedKey'])) {
                         if (is_array($field['options']['selectedKey'])) {
                             $selected = in_array((string)$key, $field['options']['selectedKey']);
