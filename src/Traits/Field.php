@@ -388,20 +388,14 @@ trait Field
 
                     if (!empty($field['attributes']['optionsStyle'])) {
                         $tagContent .= ' style="';
+                        $optionsStyle = is_array($field['attributes']['optionsStyle']) ? $field['attributes']['optionsStyle'][$key] : $field['attributes']['optionsStyle'];
 
-                        if (!is_array($field['attributes']['optionsStyle'])) {
-                            foreach ($field['attributes']['optionsStyle'] as $attributeCSS => $valueCSS) {
-                                if (!empty($valueCSS)) {
-                                    $tagContent .= $attributeCSS . ':' . $valueCSS . ';';
-                                }
-                            }
-                        } else {
-                            foreach ($field['attributes']['optionsStyle'][$key] as $attributeCSS => $valueCSS) {
-                                if (!empty($valueCSS)) {
-                                    $tagContent .= $attributeCSS . ':' . $valueCSS . ';';
-                                }
+                        foreach ($optionsStyle as $attributeCSS => $valueCSS) {
+                            if (!empty($valueCSS)) {
+                                $tagContent .= $attributeCSS . ':' . $valueCSS . ';';
                             }
                         }
+
                         $tagContent .= '"';
                     }
 
