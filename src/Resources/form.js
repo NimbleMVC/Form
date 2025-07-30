@@ -144,6 +144,8 @@
                                     });
                                 });
                             }
+
+                            form.trigger('ajaxform.done', [response, form]);
                         }
 
                         if (typeof settings.onSuccess === 'function') {
