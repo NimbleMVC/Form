@@ -2,7 +2,6 @@
 
 namespace NimblePHP\Form;
 
-use Exception;
 use NimblePHP\Form\Enum\MethodEnum;
 use NimblePHP\Form\Exceptions\ValidationException;
 use NimblePHP\Form\Interfaces\FormBuilderInterface;
@@ -10,14 +9,15 @@ use NimblePHP\Framework\DependencyInjector;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Exception\NotFoundException;
 use NimblePHP\Framework\Interfaces\ControllerInterface;
-use NimblePHP\Framework\Log;
 use NimblePHP\Framework\Request;
 use NimblePHP\Framework\Traits\LoadModelTrait;
+use NimblePHP\Framework\Traits\LogTrait;
 
 abstract class FormBuilder implements FormBuilderInterface
 {
 
     use LoadModelTrait;
+    use LogTrait;
 
     /**
      * Form instance
@@ -89,7 +89,7 @@ abstract class FormBuilder implements FormBuilderInterface
             throw new NotFoundException('Not found form ' . $name);
         }
 
-        /** @var \NimblePHP\Form\FormBuilder $formBuilder */
+        /** @var FormBuilder $formBuilder */
         $formBuilder = new $class($controller);
         DependencyInjector::inject($formBuilder);
         $formBuilder->data = $data;
@@ -121,20 +121,6 @@ abstract class FormBuilder implements FormBuilderInterface
                 ]
             ]
         );
-    }
-
-    /**
-     * Create logs
-     * @param string $message
-     * @param string $level
-     * @param array $content
-     * @return bool
-     * @throws Exception
-     * @action disabled
-     */
-    public function log(string $message, string $level = 'INFO', array $content = []): bool
-    {
-        return Log::log($message, $level, $content);
     }
 
 }
