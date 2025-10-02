@@ -2,6 +2,8 @@
 
 namespace NimblePHP\Form\Traits;
 
+use NimblePHP\Form\Form;
+
 trait Field
 {
 
@@ -434,6 +436,17 @@ trait Field
         }
 
         return $html . $additional . '</div>';
+    }
+
+    /**
+     * Clear fields
+     * @return Field|Form|self
+     */
+    public function clearFields(): self
+    {
+        $this->fields = [];
+
+        return $this;
     }
 
 }
