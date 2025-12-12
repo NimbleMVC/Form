@@ -10,6 +10,20 @@ https://nimblemvc.github.io/documentation/extension/form/start/#
 composer require nimblephp/form
 ```
 
+## Konfiguracja
+
+### Zmienne środowiskowe
+
+#### FORM_COPY_ASSET
+- **Typ**: boolean
+- **Domyślna wartość**: `true`
+- **Opis**: Określa, czy biblioteka powinna automatycznie kopiować plik `form.js` do katalogu `public/assets/`. Gdy ustawiona na `true`, plik jest kopiowany podczas rejestracji pakietu. Można wyłączyć tę funkcję, ustawiając zmienną na `false`, jeśli chcesz ręcznie zarządzać zasobami.
+
+**Przykład użycia w .env:**
+```env
+FORM_COPY_ASSET=false
+```
+
 ## Użycie
 TODO
 

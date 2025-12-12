@@ -13,6 +13,7 @@ class ServiceProvider implements ServiceProviderInterface
 
     public function register(): void
     {
+        if (filter_var($_ENV['FORM_COPY_ASSET'] ?? 'true', FILTER_VALIDATE_BOOLEAN)) {
         File::copy(__DIR__ . '/Resources/form.js', Kernel::$projectPath . '/public/assets/form.js');
 
         if (ModuleRegister::moduleExistsInVendor('nimblephp/twig')) {
@@ -20,6 +21,7 @@ class ServiceProvider implements ServiceProviderInterface
                 Twig::addJsHeader('/assets/form.js');
             } catch (\Throwable) {
             }
+        }
         }
     }
 
