@@ -2,6 +2,8 @@
 
 namespace NimblePHP\Form\Interfaces;
 
+use NimblePHP\Form\Form;
+
 interface FormBuilderInterface
 {
 
@@ -36,5 +38,11 @@ interface FormBuilderInterface
      * @return void
      */
     public function addError(string $name, string $error): void;
+
+    /**
+     * Get form instance
+     * @return Form
+     */
+    public function getFormInstance(): object;
 
 }

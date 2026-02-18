@@ -9,6 +9,7 @@ use NimblePHP\Framework\DependencyInjector;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Exception\NotFoundException;
 use NimblePHP\Framework\Interfaces\ControllerInterface;
+use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\Request;
 use NimblePHP\Framework\Traits\LoadModelTrait;
 use NimblePHP\Framework\Traits\LogTrait;
@@ -47,19 +48,19 @@ abstract class FormBuilder implements FormBuilderInterface
      * Request instance
      * @var Request
      */
-    protected Request $request;
+    public Request $request;
 
     /**
      * Input data
      * @var array
      */
-    protected array $data = [];
+    public array $data = [];
 
     /**
      * Post data
      * @var array
      */
-    protected array $postData = [];
+    public array $postData = [];
 
     /**
      * Create default data
@@ -67,9 +68,18 @@ abstract class FormBuilder implements FormBuilderInterface
     public function __construct(?ControllerInterface $controller = null)
     {
         $this->controller = $controller;
-        $this->form = new Form($this->action, $this->method);
-        $this->request = new Request();
+        $this->form = $this->getFormInstance();
+        $this->form->setId(md5(static::class));
+        $this->request = Kernel::$serviceContainer->get('kernel.request');
         $this->postData = $this->request->getAllPost();
+    }
+
+    /**
+     * Init method
+     * @return void
+     */
+    public function init(): void
+    {
     }
 
     /**
@@ -121,6 +131,15 @@ abstract class FormBuilder implements FormBuilderInterface
                 ]
             ]
         );
+    }
+
+    /**
+     * Get form instance
+     * @return Form
+     */
+    public function getFormInstance(): object
+    {
+        return $this->form ?? new Form($this->action, $this->method);
     }
 
 }
