@@ -1,0 +1,17 @@
+{
+  "module": {
+    "form": {
+      "validation": {
+        "required":  "This field cannot be empty.",
+        "checked": "The checkbox must be checked.",
+        "length_min": "The field cannot have fewer than {length} [character,characters,characters].",
+        "length_max": "The field cannot have more than {length} [character,characters,characters].",
+        "isEmail": "The provided email address is invalid.",
+        "isInteger": "The provided value must be an integer.",
+        "invalidInt": "Invalid numeric value.",
+        "decimalMax": "The field may not have more than {decimal} [decimal place, decimal places].",
+        "invalidEnum": "Incorrect value."
+      }
+    }
+  }
+}

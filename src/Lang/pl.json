@@ -1,0 +1,17 @@
+{
+  "module": {
+    "form": {
+      "validation": {
+        "required":  "Pole nie może być puste.",
+        "checked": "Pole musi zostać zaznaczone.",
+        "length_min": "Pole nie może mieć mniej niż {length} [znak,znaki,znaków].",
+        "length_max": "Pole nie może mieć więcej niż {length} [znak,znaki,znaków].",
+        "isEmail": "Podany adres e-mail jest niepoprawny.",
+        "isInteger": "Podana wartość musi być liczbą całkowitą.",
+        "invalidInt": "Niepoprawna wartość liczbowa.",
+        "decimalMax": "Pole nie może mieć więcej niż {decimal} [miejsce, miejsca, miejsc] po przecinku.",
+        "invalidEnum": "Nieprawidłowa wartość pola."
+      }
+    }
+  }
+}

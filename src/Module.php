@@ -4,13 +4,14 @@ namespace NimblePHP\Form;
 
 use Krzysztofzylka\File\File;
 use NimblePHP\Framework\Config;
-use NimblePHP\Framework\Interfaces\ServiceProviderInterface;
 use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\Module\Interfaces\ModuleInterface;
 use NimblePHP\Framework\Module\ModuleRegister;
+use NimblePHP\Framework\Translation\Translation;
+use NimblePHP\Framework\Translation\TranslationProviderInterface;
 use NimblePHP\Twig\Twig;
 
-class Module implements ModuleInterface
+class Module implements ModuleInterface, TranslationProviderInterface
 {
 
     public function getName(): string
@@ -30,6 +31,14 @@ class Module implements ModuleInterface
                 }
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function registerTranslations(): void
+    {
+        Translation::getInstance()->addTranslationPath(__DIR__ . '/Lang', Translation::PRIORITY_MODULE);
     }
 
 }
