@@ -5,28 +5,14 @@ namespace NimblePHP\Form;
 use Krzysztofzylka\Arrays\Arrays;
 use NimblePHP\Form\Exceptions\ValidationException;
 use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Kernel;
+use NimblePHP\Framework\Translation\Translation;
 
 /**
  * Form validation
  */
 class Validation
 {
-
-    /**
-     * Error language
-     * @var array
-     */
-    public static array $language = [
-        'required' => 'This field cannot be empty.',
-        'checked' => 'The checkbox must be checked.',
-        'length_min' => 'The field cannot have fewer than {length} [character,characters,characters].',
-        'length_max' => 'The field cannot have more than {length} [character,characters,characters].',
-        'isEmail' => 'The provided email address is invalid.',
-        'isInteger' => 'The provided value must be an integer.',
-        'invalidInt' => 'Invalid numeric value.',
-        'decimalMax' => 'The field may not have more than {decimal} [decimal place, decimal places].',
-        'invalidEnum' => 'Incorrect value.'
-    ];
 
     /**
      * Fields
@@ -47,6 +33,12 @@ class Validation
     protected array $validationErrors = [];
 
     /**
+     * Translation instance
+     * @var Translation
+     */
+    protected Translation $translation;
+
+    /**
      * Construct
      * @param array $validationList
      * @param array $data
@@ -55,37 +47,7 @@ class Validation
     {
         $this->fields = $validationList;
         $this->data = $data;
-    }
-
-    /**
-     * Change language
-     * @param string $lang
-     * @return void
-     * @throws NimbleException
-     */
-    public static function changeLanguage(string $lang): void
-    {
-        if (!in_array($lang, ['PL'])) {
-            throw new NimbleException('Language not supported.');
-        }
-
-        switch ($lang) {
-            case 'PL':
-                self::$language = array_merge(
-                    self::$language,
-                    [
-                        'required' => 'Pole nie może być puste.',
-                        'checked' => 'Pole musi zostać zaznaczone.',
-                        'length_min' => 'Pole nie może mieć mniej niż {length} [znak,znaki,znaków].',
-                        'length_max' => 'Pole nie może mieć więcej niż {length} [znak,znaki,znaków].',
-                        'isEmail' => 'Podany adres e-mail jest niepoprawny.',
-                        'isInteger' => 'Podana wartość musi być liczbą całkowitą.',
-                        'invalidInt' => 'Niepoprawna wartość liczbowa.',
-                        'decimalMax' => 'Pole nie może mieć więcej niż {decimal} [miejsce, miejsca, miejsc] po przecinku.',
-                        'invalidEnum' => 'Nieprawidłowa wartość pola.'
-                    ]
-                );
-        }
+        $this->translation = Kernel::$serviceContainer->get('translation');
     }
 
     /**
@@ -128,13 +90,13 @@ class Validation
         switch ($name) {
             case 'required':
                 if (is_null($data) || trim($data) === '') {
-                    throw new ValidationException(self::$language['required']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.required'));
                 }
 
                 break;
             case 'checked':
                 if (!(bool)trim($data)) {
-                    throw new ValidationException(self::$language['checked']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.checked'));
                 }
 
                 break;
@@ -144,13 +106,13 @@ class Validation
                     $max = $customData['max'] ?? null;
 
                     if ($min && strlen($data) < $min) {
-                        $validation = str_replace('{length}', $min, self::$language['length_min']);
+                        $validation = str_replace('{length}', $min, $this->translation->translate('module.form.validation.length_min'));
 
                         throw new ValidationException($this->replaceInflections($validation));
                     }
 
                     if ($max && strlen($data ?? '') > $max) {
-                        $validation = str_replace('{length}', $max, self::$language['length_max']);
+                        $validation = str_replace('{length}', $max, $this->translation->translate('module.form.validation.length_max'));
 
                         throw new ValidationException($this->replaceInflections($validation));
                     }
@@ -159,13 +121,13 @@ class Validation
                 break;
             case 'isEmail':
                 if (!filter_var($data, FILTER_VALIDATE_EMAIL)) {
-                    throw new ValidationException(self::$language['isEmail']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.isEmail'));
                 }
 
                 break;
             case 'isInteger':
                 if (!filter_var($data, FILTER_VALIDATE_INT)) {
-                    throw new ValidationException(self::$language['isInteger']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.isInteger'));
                 }
 
                 break;
@@ -173,7 +135,7 @@ class Validation
                 $data = str_replace(',', '.', $data);
 
                 if (!is_numeric($data)) {
-                    throw new ValidationException(self::$language['invalidInt']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.invalidInt'));
                 }
 
                 if (!str_contains($data, '.')) {
@@ -189,7 +151,7 @@ class Validation
                 $decimalPart = explode('.', $data)[1];
 
                 if (strlen($decimalPart) > $maxPlaces) {
-                    $validation = str_replace('{decimal}', $maxPlaces, self::$language['decimalMax']);
+                    $validation = str_replace('{decimal}', $maxPlaces, $this->translation->translate('module.form.validation.decimalMax'));
 
                     throw new ValidationException($this->replaceInflections($validation));
                 }
@@ -199,8 +161,9 @@ class Validation
                 $names = array_column($customData::cases(), 'name');
 
                 if (!in_array($data, $names)) {
-                    throw new ValidationException(self::$language['invalidEnum']);
+                    throw new ValidationException($this->translation->translate('module.form.validation.invalidEnum'));
                 }
+
                 break;
         }
     }
