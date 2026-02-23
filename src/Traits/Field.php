@@ -431,7 +431,7 @@ trait Field
             $html .= '<span ' . $tagContent . '>' . $field['title'] . '</span>';
         }
 
-        if (!empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
+        if ($field['type'] !== 'hidden' && !empty($this->getData()) && array_key_exists($field['name'], $this->validationErrors)) {
             $html .= '<div class="validation text-danger">' . $this->validationErrors[$field['name']] . '</div>';
         }
 
