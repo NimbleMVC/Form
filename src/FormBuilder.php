@@ -10,6 +10,7 @@ use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Exception\NotFoundException;
 use NimblePHP\Framework\Interfaces\ControllerInterface;
 use NimblePHP\Framework\Kernel;
+use NimblePHP\Framework\Libs\Classes;
 use NimblePHP\Framework\Request;
 use NimblePHP\Framework\Traits\LoadModelTrait;
 use NimblePHP\Framework\Traits\LogTrait;
@@ -93,7 +94,7 @@ abstract class FormBuilder implements FormBuilderInterface
      */
     public static function generate(string $name, ?ControllerInterface $controller = null, array $data = []): string
     {
-        $class = '\App\Form\\' . str_replace('/', '\\', $name);
+        $class = Classes::findClassName($name, '\App\Form\\');
 
         if (!class_exists($class)) {
             throw new NotFoundException('Not found form ' . $name);
